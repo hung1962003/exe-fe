@@ -1,0 +1,36 @@
+.header {
+    background-color: #79835c;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 64px;
+  
+    &__logo {
+      height: 50px;
+      cursor: pointer;
+    }
+  
+    &__right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+  
+    .user_icon, .cart_icon, .logout-icon {
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+    }
+  
+    .logout {
+      display: flex;
+      align-items: center;
+    }
+  
+    .current-balance p {
+      color: white;
+      margin: 0;
+    }
+  }
+  
