@@ -9,6 +9,7 @@ import Home from "./pages/Homes";
 import LoginAndRegister from "./pages/LoginAndRegister";
 import Services from "./pages/Services";
 import YouknowWho from "./pages/YouknowWho";
+import ActivateWorkshopOwner from "./pages/ActivateWorkshopOwner";
 
 function App() {
   const router = createBrowserRouter([
@@ -28,6 +29,10 @@ function App() {
         {
           path: "/Banlaai",
           element: <YouknowWho />
+        },
+        {
+          path: "/activateWorkshopOwner",
+          element: <ActivateWorkshopOwner />
         }
       ],
       
