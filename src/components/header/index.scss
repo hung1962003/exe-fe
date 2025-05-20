@@ -32,5 +32,33 @@
       color: white;
       margin: 0;
     }
+    // navbar 
+    .header__navbar {
+      .navbar__list {
+        display: flex;
+        list-style: none;
+        gap: 32px;
+        margin: 0;
+        padding: 0;
+
+        .navbar__item {
+          color: #FFD700; // màu chữ vàng nhạt
+          cursor: pointer;
+          font-size: 16px;
+          position: relative;
+          transition: color 0.3s ease;
+
+          &:hover {
+            color: white;
+          }
+        }
+        .navbar__item.active {
+          color: white;
+        }
   }
+      }
+    }
+  
+    // responsive
+  
   

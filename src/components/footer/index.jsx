@@ -8,8 +8,8 @@ function Footer() {
       title: "Quick Links",
       items: [
         { label: "Home", href: "#" },
-        { label: "About Us", href: "#" },
-        { label: "Services", href: "#" },
+        { label: "About Us", href: "#" }, 
+        { label: "Services", href: "/services" },
         { label: "Membership", href: "#" },
         { label: "Blog", href: "#" },
         { label: "Contact Us", href: "#" },

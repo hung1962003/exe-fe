@@ -51,13 +51,32 @@ const Header = () => {
   const handleNavigateProfilePage = () => {
     navigate("/my-account/profile");
   };
-
+  const navbarItems = [
+    { name : "Home" , path : "/" },
+    { name : "About Us" , path : "#" },
+    { name : "Services" , path : "/services" },
+    { name : "Page" , path : "#" },
+    { name : "Blog" , path : "#" },
+    { name : "Contact Us" , path : "#" },
+   
+  ]
   return (
     <>
       <div className="header">
         <div className="header__left" onClick={handleNavigateHomePage}>
           <img src="/img/header.png" alt="Logo" className="header__logo" />
         </div>
+        <nav className="header__navbar">
+          <ul className="navbar__list">
+            {navbarItems.map((item, index) => (
+              <li className="navbar__item" key={index} onClick={() => navigate(item.path)}>
+                {item.name}
+              </li>
+            ))}
+          </ul>
+        </nav>
+        
+        
 
         <div className="header__right">
           {isLoggedIn ? (
