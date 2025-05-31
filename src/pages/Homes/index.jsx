@@ -6,7 +6,7 @@ import {
   GoogleOutlined,
 } from "@ant-design/icons";
 import "./index.scss";
-import { jwtDecode } from "jwt-decode";
+// import { jwtDecode } from "jwt-decode";
 import CarouselForYou from "../../components/SliderMain";
 import BannerCarousel from "../../components/BannerCarousel";
 import MainCarosel from "../../components/MainCarosel";
@@ -29,13 +29,27 @@ function Home() {
   ];
 
   return (
-    <>
-      <MainCarosel data={suKienData} />
-      <BannerCarousel title="Sự kiện đặc biệt" data={suKienData} />
-      <CarouselForYou title="Dành cho bạn" />
-      <CarouselForYou title="Workshop" />
-      <CarouselForYou title="San khau & Nghe thuat" />
-    </>
+    <div className="view">
+      <div className="block">
+        {" "}
+        <MainCarosel data={suKienData} />
+      </div>
+      <div className="block">
+        {" "}
+        <BannerCarousel title="Sự kiện đặc biệt" data={suKienData} />{" "}
+      </div>
+      <div className="block">
+        {" "}
+        <CarouselForYou title="Dành cho bạn" />
+      </div>
+      <div className="block">
+        {" "}
+        <CarouselForYou title="Workshop" />
+      </div>
+      <div className="block">
+        <CarouselForYou title="San khau & Nghe thuat" />
+      </div>
+    </div>
   );
 }
 
