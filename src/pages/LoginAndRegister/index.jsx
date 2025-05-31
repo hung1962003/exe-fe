@@ -1,17 +1,69 @@
 import React from "react";
 import { Form, Input, Button, Checkbox } from "antd";
 import "./index.scss";
+import api from "../../config/api";
+import { useDispatch } from "react-redux";
+import { useForm } from "antd/es/form/Form";
+import { login } from "../../redux/features/userSlice";
+import { showSuccessToast } from "./../../config/configToast";
+import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 
 const LoginAndRegister = () => {
+  const navigate = useNavigate();
   const [loginForm] = Form.useForm();
   const [registerForm] = Form.useForm();
-
-  const onFinishLogin = (values) => {
-    console.log("Login values:", values);
+  const dispatch = useDispatch();
+  const [form] = useForm();
+  const onFinishLogin = async (values) => {
+    try {
+      console.log("Login values:", values);
+      const response = await api.post("auth/login", values);
+      if (response?.data) {
+        const user = response.data;
+        dispatch(login(user));
+        localStorage.setItem("token", user.token);
+        const decoded = jwtDecode(user.token);
+        const userRole = decoded.role;
+        console.log(decoded);
+        localStorage.setItem("role", decoded.role);
+        showSuccessToast("Login success");
+        console.log(user);
+        switch (userRole) {
+          case "Instructor":
+            navigate("/instructor");
+            break;
+          case "Manager":
+            navigate("/manager");
+            break;
+          case "Administrator":
+            navigate("/dashboard");
+            break;
+          default:
+            navigate("/");
+        }
+      } else {
+        toast.error("Invalid response from server");
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error(navigator.onLine ? "Login failed" : "No internet connection");
+      form.resetFields();
+    }
   };
 
-  const onFinishRegister = (values) => {
-    console.log("Register values:", values);
+  const onFinishRegister = async (values) => {
+    console.log(values);
+    try {
+      await api.post("/Accounts/SignUp", values);
+      toast.success("Đăng ký thành công!");
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+      toast.error("Đăng ký thất bại!");
+      form.resetFields();
+    }
   };
 
   return (
@@ -27,13 +79,14 @@ const LoginAndRegister = () => {
               onFinish={onFinishLogin}
               layout="vertical"
               className="auth-form"
+              autoComplete="off"
             >
               <Form.Item
                 name="email"
-                label="Tên người dùng hoặc email"
+                label="Email"
                 rules={[{ required: true, message: "Vui lòng nhập email!" }]}
               >
-                <Input placeholder="Tên người dùng hoặc email" />
+                <Input placeholder="Email" />
               </Form.Item>
 
               <Form.Item

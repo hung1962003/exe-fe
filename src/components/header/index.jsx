@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/features/userSlice";
 import { LogoutOutlined } from "@ant-design/icons";
-import api from './../../config/api';
+import api from "./../../config/api";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -16,25 +16,16 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   setIsLoggedIn(!!token);
-  // }, []);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
 
-  // const fetchWallet = async () => {
-  //   try {
-  //     const response = await api.get("Wallet");
-  //     console.log(response.data);
-  //     setBalance(response.data.amountofMoney);
-  //   } catch (error) {
-  //     //toast.error("Error while fetching");
-  //     console.log(error);
-  //   }
-  // };
 
-  // useEffect(() => {
-  //   if (isLoggedIn) fetchWallet();
-  // }, [isLoggedIn]);
+
+  useEffect(() => {
+   ;
+  }, [isLoggedIn]);
 
   const handleNavigateLoginPage = () => {
     navigate("/loginAndRegister");
@@ -62,28 +53,28 @@ const Header = () => {
         <div className="header__right">
           {isLoggedIn ? (
             <>
-              <div className="profile-user" onClick={handleNavigateProfilePage}>
+              <div className="profile-user" onClick={handleNavigateLoginPage}>
                 <TiUser className="user_icon" size={28} />
               </div>
-
               <div
                 className="logout"
                 onClick={() => {
                   dispatch(logout());
                   localStorage.removeItem("token");
                   setIsLoggedIn(false);
-                  navigate("/login");
+                  navigate("/loginAndRegister");
                 }}
               >
                 <LogoutOutlined className="logout-icon" />
               </div>
             </>
           ) : (
-            <div className="profile-user" onClick={handleNavigateLoginPage}>
-              <TiUser className="user_icon" size={28} />
-            </div>
+            <>
+              <div className="profile-user" onClick={handleNavigateLoginPage}>
+                <p>Đăng nhập / Đăng ký</p>
+              </div>
+            </>
           )}
-
           <div className="cart" onClick={handleNavigateCartPage}>
             <BiSolidCart className="cart_icon" />
           </div>

@@ -5,7 +5,7 @@
     justify-content: space-between;
     padding: 0 2rem;
     height: 64px;
-  
+    cursor: pointer;
     &__logo {
       height: 50px;
       cursor: pointer;
@@ -16,7 +16,7 @@
       align-items: center;
       gap: 1rem;
     }
-  
+    
     .user_icon, .cart_icon, .logout-icon {
       font-size: 24px;
       color: white;
@@ -31,6 +31,10 @@
     .current-balance p {
       color: white;
       margin: 0;
+    }
+    p{
+      color: white;
+      padding-bottom: 3px;
     }
   }
   

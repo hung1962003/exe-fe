@@ -65,8 +65,8 @@ function Footer() {
           {socialIcons.map((icon, idx) => (
             <img key={idx} src={icon.src} alt={icon.alt} />
           ))}
-        </div>
-      </div>
+            </div>
+          </div>
 
       <div className="footer__center">
         {footerLinks.map((section, index) => (
@@ -76,7 +76,7 @@ function Footer() {
               {section.items.map((item, i) => (
                 <li key={i}>
                   <a href={item.href}>{item.label}</a>
-                </li>
+              </li>
               ))}
             </ul>
           </div>

@@ -13,11 +13,11 @@
 // export type AppDispatch = typeof store.dispatch
 import { configureStore } from "@reduxjs/toolkit";
 
-import userReducer from "./features/userSlice";
 
 import { persistReducer } from "redux-persist";
 import { persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import rootReducer from "./rootReducer";
 
 // luu tru state vo localStorage (ko mat data khi refresh trang)
 // Cấu hình redux-persist
@@ -25,17 +25,16 @@ const persistConfig = {
   key: "user",
   version: 1, // 🔹 Đảm bảo version >= 1
   storage, // luu tru trong localStorage
-  whitelist: ["user"], // Chỉ lưu trạng thái `user`
+  whitelist: ["user", "cart"], // Chỉ lưu trạng thái `user` , `cart`
 };
 
 // Tạo reducer có khả năng lưu trữ(bao quanh rootReducer de redux store luu tru) )
-const persistedReducer = persistReducer(persistConfig, userReducer);
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 // Tạo store với persistedReducer // luu tru trang thai
 export const store = configureStore({
-  reducer: {
-    user: persistedReducer,
-  },
+  reducer: persistedReducer,
+  
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false, // Vô hiệu hóa kiểm tra serializable
