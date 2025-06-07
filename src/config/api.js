@@ -6,6 +6,13 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+
+  transformRequest: [
+    (data) => {
+      return JSON.stringify(data);
+    },
+  ],
+
 });
 
 api.interceptors.request.use(
