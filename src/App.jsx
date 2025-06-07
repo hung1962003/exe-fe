@@ -3,7 +3,6 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "./redux/store";
 
-
 import Layout from "./components/layout";
 import Home from "./pages/Homes";
 import LoginAndRegister from "./pages/LoginAndRegister";
@@ -12,11 +11,14 @@ import YouknowWho from "./pages/YouknowWho";
 import ActivateWorkshopOwner from "./pages/ActivateWorkshopOwner";
 import DashboardInstructor from "./pages/DashboardInstructor";
 import ProductDetail from "./pages/ProductDetails";
-import Cart from "./pages/Cart"
+import Cart from "./pages/Cart";
 import ProductPage from "./pages/Product";
 import UploadExample from "./utils/imagekit-upload";
 import WorkshopPage from "./pages/WorkshopPage";
 import HistoryTransaction from "./pages/HistoryTransaction";
+import WorkshopDetails from "./pages/WorkshopDetails";
+import PaymentQR from "./pages/PaymentQR";
+import BankAccountRegister from "./pages/BankAccount";
 function App() {
   const router = createBrowserRouter([
     {
@@ -32,43 +34,54 @@ function App() {
           element: <Cart />,
         },
         {
+          path: "/PaymentQR",
+          element: <PaymentQR />,
+        },
+        {
+          path:"/BankAccountRegister",
+          element:<BankAccountRegister/>
+        },
+        {
           path: "/services",
-          element: <Services />
+          element: <Services />,
         },
         {
           path: "/Banlaai",
-          element: <YouknowWho />
+          element: <YouknowWho />,
         },
         {
           path: "/activateWorkshopOwner",
-          element: <ActivateWorkshopOwner />
+          element: <ActivateWorkshopOwner />,
         },
         {
           path: "/dashboardInstructor",
-          element: <DashboardInstructor />
+          element: <DashboardInstructor />,
         },
         {
           path: "/product/:id",
-          element: <ProductDetail />
+          element: <ProductDetail />,
+        },
+        {
+          path: "/workshop/:id",
+          element: <WorkshopDetails />,
         },
         {
           path: "/product",
-          element: <ProductPage />
+          element: <ProductPage />,
         },
         {
           path: "/upload",
-          element: <UploadExample />
+          element: <UploadExample />,
         },
         {
           path: "/workshop",
-          element: <WorkshopPage />
+          element: <WorkshopPage />,
         },
         {
           path: "/historyTransaction",
-          element: <HistoryTransaction />
-        }
+          element: <HistoryTransaction />,
+        },
       ],
-      
     },
     {
       path: "/loginAndRegister",

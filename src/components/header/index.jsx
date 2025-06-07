@@ -8,7 +8,8 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/features/userSlice";
 import { LogoutOutlined } from "@ant-design/icons";
-import api from "./../../config/api";
+
+import { persistor } from './../../redux/store';
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,11 +22,7 @@ const Header = () => {
     setIsLoggedIn(!!token);
   }, []);
 
-
-
-  useEffect(() => {
-   ;
-  }, [isLoggedIn]);
+  useEffect(() => {}, [isLoggedIn]);
 
   const handleNavigateLoginPage = () => {
     navigate("/loginAndRegister");
@@ -47,7 +44,11 @@ const Header = () => {
     <>
       <div className="header">
         <div className="header__left" onClick={handleNavigateHomePage}>
-          <img src="/img/header.png" alt="Logo" className="header__logo" />
+          <img
+            src=" public/img/header.png"
+            alt="Logo"
+            className="header__logo"
+          />
         </div>
 
         <div className="header__right">
@@ -60,6 +61,7 @@ const Header = () => {
                 className="logout"
                 onClick={() => {
                   dispatch(logout());
+                  persistor.purge();  // Xoá redux-persist khỏi localStorage
                   localStorage.removeItem("token");
                   setIsLoggedIn(false);
                   navigate("/loginAndRegister");

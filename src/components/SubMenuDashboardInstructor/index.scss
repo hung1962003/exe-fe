@@ -1,11 +1,12 @@
 .submenu-instructor-wrapper {
   background: #fdf6ec;
   max-height: 100vh;
-  ;
+
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 1vw 11vw 0 11vw;
+  justify-content: flex-start;
+  padding: 1vw 0 0 0;
+  align-items: center;
 }
 
 .submenu-tabs {
@@ -34,28 +35,36 @@
 }
 
 .submenu-content {
-  padding: 0 48px;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .workshop-list {
-  display: flex;
+  background: transparent;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 40px;
-  flex-wrap: wrap;
   margin-top: 24px;
+  justify-items: center;
+  width: 100%;
+  max-width: 1200px;
 }
 
 .workshop-card {
   background: #c6b08a;
-  border-radius: 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   display: flex;
   padding: 24px 20px;
   gap: 18px;
-  min-width: 340px;
-  max-width: 420px;
+  min-width: 0;
+  max-width: 360px;
   width: 100%;
   box-sizing: border-box;
   align-items: flex-start;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .workshop-img {
@@ -167,7 +176,8 @@
   background: #fdf0dc;
 }
 
-.participants-table th, .participants-table td {
+.par cipants-table th,
+.participants-table td {
   padding: 12px 18px;
   text-align: left;
 }
@@ -190,7 +200,8 @@
 }
 
 @media (max-width: 900px) {
-  .participants-table th, .participants-table td {
+  .paripants-table th,
+  .participants-table td {
     padding: 8px 6px;
     font-size: 0.95rem;
   }

@@ -17,6 +17,13 @@ const workshops = [
     desc: "Tham gia hội thảo này để tìm hiểu những kiến thức cơ bản về nhiếp ảnh và nâng cao kỹ năng của bạn.",
     tags: ["Nhiếp ảnh", "Người mới bắt đầu"],
   },
+  {
+    img: "/img/photo2.jpg",
+    title: "hello world!!!!!",
+    author: "Sarah Lee",
+    desc: "Tham gia hội thảo này để tìm hiểu những kiến thức cơ bản về nhiếp ảnh và nâng cao kỹ năng của bạn.",
+    tags: ["Nhiếp ảnh", "Người mới bắt đầu"],
+  },
 ];
 const participants = [
   {
@@ -122,7 +129,6 @@ function SubMenuDashboardInstructor() {
         {activeTab === 2 && (
           <div className="participants-table-wrapper">
             <div className="participants-table-title">
-              
               {/* Dropdown chọn discount */}
               {/* <Select
                 style={{ width: "100%", marginTop: 10 }}

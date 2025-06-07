@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import "./index.scss";
 import { Button } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
 
 function Cart() {
   // Demo state cho số lượng
+  const dispatch = useDispatch();
+  //dispatch.
   const [cart, setCart] = useState([
     {
       type: "product",
