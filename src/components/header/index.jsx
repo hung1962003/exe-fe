@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/features/userSlice";
 import { LogoutOutlined } from "@ant-design/icons";
-import api from "./../../config/api";
+
 import { persistor } from './../../redux/store';
 
 const Header = () => {
