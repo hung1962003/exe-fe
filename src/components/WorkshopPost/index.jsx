@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Form,
   Input,
@@ -10,6 +10,7 @@ import {
   Row,
   Col,
   Modal,
+  Image,
 } from "antd";
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import "./index.scss";
@@ -23,6 +24,9 @@ import {
   upload,
 } from "@imagekit/react";
 import api from "../../config/api";
+import { DatePicker } from "antd";
+import dayjs from "dayjs"; // dùng để xử lý thời gian
+
 const { Option } = Select;
 
 const WorkshopPost = ({ onClose }) => {
@@ -32,6 +36,7 @@ const WorkshopPost = ({ onClose }) => {
   const [videoFile, setVideoFile] = useState(null);
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(true);
+
   //const fileInputRef = useRef(null);
   // Create an AbortController instance to provide an option to cancel the upload if needed.
   const abortController = new AbortController();
@@ -121,7 +126,7 @@ const WorkshopPost = ({ onClose }) => {
   // Hàm submit form
   const handleFinish = async () => {
     // Gọi upload video trước (nếu có)
-    await handleVideoUpload();
+    //await handleVideoUpload();
     // Sau đó xử lý các giá trị form khác
     // ...
     setIsModalOpen(false);
@@ -187,10 +192,9 @@ const WorkshopPost = ({ onClose }) => {
               }
             >
               <Upload
-                accept="image/*"
                 className="custom-upload"
                 customRequest={handleFileUpload}
-                listType="picture-circle"
+                listType="picture-card"
                 fileList={fileList}
                 onPreview={handlePreview}
                 onChange={handleChange}
@@ -222,17 +226,18 @@ const WorkshopPost = ({ onClose }) => {
                 />
               )}
             </Form.Item>
-            <Form.Item
-              label="Thêm Video"
-              name="video"
-              valuePropName="fileList"
-              getValueFromEvent={(e) =>
-                Array.isArray(e) ? e : e && e.fileList
-              }
-            >
-              <UploadExample onFileChange={(file) => setVideoFile(file)} />
-            </Form.Item>
-            <Form.Item label="Mô Tả" name="description">
+            {/* <Form.Item
+                label="Thêm Video"
+                name="video"
+                valuePropName="fileList"
+                getValueFromEvent={(e) =>
+                  Array.isArray(e) ? e : e && e.fileList
+                }
+              >
+                <UploadExample onFileChange={(file) => setVideoFile(file)} />
+              </Form.Item> */}
+            <Form.Item label="Thông tin sự kiện" name="description" required>
+              {/* <RichTextEditor value={description} onChange={setDescription} /> */}
               <Input.TextArea
                 placeholder="VD: Làm Gốm là 1 nghệ thuật, và người làm gốm là 1 nghệ nhân"
                 rows={4}
@@ -250,24 +255,107 @@ const WorkshopPost = ({ onClose }) => {
                 <Option value="photography">Nhiếp ảnh</Option>
               </Select>
             </Form.Item>
-            <Form.Item label="Giá tiền trên sản phẩm" name="price">
+            <Form.Item label="Giá tiền cho vé " name="price">
               <Input placeholder="VD: 123.000 đ" />
             </Form.Item>
 
-            <Form.Item label="Lịch trình" name="schedule">
-              <Select placeholder="Ngày/Tháng/Năm">
-                <Option value="monday">Thứ Hai</Option>
-                <Option value="tuesday">Thứ Ba</Option>
-                <Option value="wednesday">Thứ Tư</Option>
-                <Option value="thursday">Thứ Năm</Option>
-                <Option value="friday">Thứ Sáu</Option>
-                <Option value="saturday">Thứ Bảy</Option>
-                <Option value="sunday">Chủ Nhật</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item label="Thời gian" name="time">
-              <TimePicker placeholder="00:00:00" style={{ width: "100%" }} />
-            </Form.Item>
+            <Form.List name="schedules">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <div
+                      key={key}
+                      style={{
+                        marginBottom: 24,
+                        border: "1px solid #ccc",
+                        padding: 16,
+                        borderRadius: 8,
+                      }}
+                    >
+                      <Row gutter={16}>
+                        <Col span={12}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, "title"]}
+                            label="Tiêu đề lịch trình"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Vui lòng nhập tiêu đề!",
+                              },
+                            ]}
+                          >
+                            <Input placeholder="VD: Buổi sáng làm gốm" />
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, "description"]}
+                            label="Mô tả lịch trình"
+                          >
+                            <Input placeholder="VD: Học cách tạo hình sản phẩm" />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Row gutter={16}>
+                        <Col span={12}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, "startTime"]}
+                            label="Thời gian bắt đầu"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Chọn thời gian bắt đầu!",
+                              },
+                            ]}
+                          >
+                            <DatePicker
+                              showTime
+                              style={{ width: "100%" }}
+                              format="YYYY-MM-DD HH:mm:ss"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, "endTime"]}
+                            label="Thời gian kết thúc"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Chọn thời gian kết thúc!",
+                              },
+                            ]}
+                          >
+                            <DatePicker
+                              showTime
+                              style={{ width: "100%" }}
+                              format="YYYY-MM-DD HH:mm:ss"
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Button onClick={() => remove(name)} danger>
+                        Xóa lịch trình này
+                      </Button>
+                    </div>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      + Thêm lịch trình
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
 
             <Form.Item>
               <div className="button-group">

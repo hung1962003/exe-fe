@@ -1,0 +1,512 @@
+.ticket-container {
+  display: flex;
+  background: #232323;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.3);
+  max-width: 1100px;
+  margin: 40px auto;
+}
+
+.ticket-info {
+  background: #2d2d2d;
+  color: #fff;
+  padding: 32px 40px;
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  h2 {
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-bottom: 18px;
+    line-height: 1.3;
+  }
+
+  .ticket-date,
+  .ticket-location {
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ticket-more-date {
+    background: #444;
+    color: #fff;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 0.95rem;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #444;
+    margin: 18px 0;
+  }
+
+  .ticket-price {
+    font-size: 1.2rem;
+    margin-bottom: 18px;
+    span {
+      color: #2ecc40;
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+  }
+
+  .ticket-btn {
+    background: #2ecc40;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+    &:hover {
+      background: #27ae38;
+    }
+  }
+}
+
+.ticket-image {
+  flex: 1 1 50%;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  img {
+    width: 95%;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+    object-fit: cover;
+  }
+}
+.workshop-details-wrapper {
+  background: #f6f8fb;
+  min-height: 100vh;
+  padding: 32px 0;
+}
+
+.intro-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px 36px 16px 36px;
+  max-width: 800px;
+  margin: 0 auto 24px auto;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+  .intro-content {
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin-bottom: 10px;
+      b {
+        font-weight: 700;
+      }
+    }
+    &__description {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      li {
+        margin-bottom: 6px;
+        font-size: 1.05rem;
+        .label {
+          font-style: italic;
+          font-weight: 500;
+          color: #222;
+        }
+      }
+    }
+  }
+  .intro-arrow {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 1.5rem;
+    color: #888;
+  }
+}
+
+.ticket-info-card {
+  background: #18191b;
+  border-radius: 14px;
+  max-width: 800px;
+  margin: 0 auto 24px auto;
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+
+  .ticket-info-header {
+    padding: 16px 24px 0 24px;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .ticket-info-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px 16px 24px;
+
+    .ticket-time {
+      font-size: 1.08rem;
+      letter-spacing: 0.5px;
+    }
+    .buy-ticket-btn {
+      background: #10c45c;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 28px;
+      font-size: 1.08rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      &:hover {
+        background: #0e9e4a;
+      }
+    }
+  }
+}
+
+.organizer-card {
+  background: #fff;
+  border-radius: 14px;
+  max-width: 800px;
+  margin: 0 auto 24px auto;
+  padding: 24px 32px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+
+  h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+  .organizer-info {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    .organizer-logo {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #f6f8fb;
+      border: 1px solid #eee;
+    }
+    .organizer-name {
+      font-size: 1.08rem;
+      margin-bottom: 2px;
+    }
+    .organizer-desc {
+      color: #666;
+      font-size: 0.98rem;
+    }
+  }
+}
+.footer-workshop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  .footer-workshop-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+}
+
+// Reset
+.workshop-page {
+  background: #fdf6ec;
+  min-height: 100vh;
+  padding-bottom: 40px;
+  font-family: "Inter", Arial, sans-serif;
+}
+
+// Banner vé
+.ticket-banner {
+  display: flex;
+  align-items: stretch;
+  background: linear-gradient(90deg, #232323 60%, #1a1a1a 100%);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.18);
+  max-width: 1100px;
+  margin: 40px auto 32px auto;
+
+  &__info {
+    flex: 1 1 55%;
+    color: #fff;
+    padding: 40px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    h2 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      line-height: 1.3;
+      span {
+        color: #2ecc40;
+      }
+    }
+    .ticket-banner__meta {
+      font-size: 1.08rem;
+      margin-bottom: 18px;
+      div {
+        margin-bottom: 7px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        i {
+          color: #2ecc40;
+          font-size: 1.1em;
+        }
+      }
+    }
+    .ticket-banner__more-date {
+      background: #444;
+      color: #fff;
+      border-radius: 6px;
+      padding: 2px 10px;
+      font-size: 0.95rem;
+      display: inline-block;
+      margin-bottom: 10px;
+      width: fit-content;
+    }
+    .ticket-banner__price {
+      font-size: 1.2rem;
+      margin-bottom: 18px;
+      span {
+        color: #2ecc40;
+        font-weight: bold;
+        font-size: 1.5rem;
+      }
+    }
+    .btn-main {
+      background: #2ecc40;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 0;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+      &:hover {
+        background: #27ae38;
+      }
+    }
+  }
+  &__img {
+    flex: 1 1 45%;
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      width: 95%;
+      border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+      object-fit: cover;
+    }
+  }
+}
+
+// Card chung
+.workshop-card {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 1100px;
+  margin: 0 auto 24px auto;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  padding: 28px 36px;
+  &.intro {
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+    .intro-content {
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin-bottom: 10px;
+        b {
+          font-weight: 700;
+        }
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        li {
+          margin-bottom: 6px;
+          font-size: 1.05rem;
+          .label {
+            font-style: italic;
+            font-weight: 500;
+            color: #222;
+          }
+        }
+      }
+    }
+  }
+  &.ticket-info {
+    background: #18191b;
+    color: #fff;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    .ticket-info__header {
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 18px 24px 12px 24px;
+      border-bottom: 1px solid #222;
+      border-radius: 16px 16px 0 0;
+    }
+    .ticket-info__body {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      padding: 18px 24px;
+      font-size: 1.08rem;
+      min-height: 60px;
+      span {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        i {
+          color: #fff;
+          font-size: 1.1em;
+        }
+        b {
+          font-weight: 700;
+        }
+      }
+      .btn-main {
+        background: #10c45c;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 28px;
+        font-size: 1.08rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        &:hover {
+          background: #0e9e4a;
+        }
+      }
+    }
+  }
+  &.organizer {
+    display: relative;
+    flex-direction: column;
+    align-items: flex-start;
+    h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+    .organizer__center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+    }
+    .organizer__info {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 18px 0 8px 0;
+      min-height: 120px;
+    }
+    .organizer__logo {
+      width: 96px;
+      height: 96px;
+      min-width: 96px;
+      min-height: 96px;
+      object-fit: cover;
+      border-radius: 16px;
+      background: #f6f8fb;
+      border: 1px solid #eee;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      display: block;
+      margin-bottom: 8px;
+    }
+    .organizer__name {
+      font-size: 1.18rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+    .organizer__desc {
+      color: #666;
+      font-size: 1.02rem;
+      margin-top: 2px;
+      text-align: center;
+    }
+  }
+}
+
+// Footer gợi ý
+.workshop-footer {
+  max-width: 900px;
+  margin: 0 auto;
+  .workshop-footer__title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+}
+
+// Responsive
+@media (max-width: 900px) {
+  .ticket-banner {
+    flex-direction: column;
+    &__info,
+    &__img {
+      padding: 24px 16px;
+      max-width: 100%;
+    }
+    &__img {
+      img {
+        width: 100%;
+      }
+    }
+  }
+  .workshop-card {
+    padding: 18px 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .workshop-card.organizer .organizer__info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .workshop-card.organizer .organizer__logo {
+    margin-bottom: 8px;
+  }
+}

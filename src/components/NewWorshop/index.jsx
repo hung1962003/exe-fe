@@ -48,7 +48,9 @@ function NewWorkshop() {
       </div>
       {showForm && (
         <div className="workshoppost-modal" onClick={() => setShowForm(false)}>
-          <WorkshopPost onClose={() => setShowForm(false)} />
+          <div onClick={(e) => e.stopPropagation()}>
+            <WorkshopPost onClose={() => setShowForm(false)} />
+          </div>
         </div>
       )}
     </div>

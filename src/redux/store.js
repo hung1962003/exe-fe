@@ -22,7 +22,7 @@ import rootReducer from "./rootReducer";
 // luu tru state vo localStorage (ko mat data khi refresh trang)
 // Cấu hình redux-persist
 const persistConfig = {
-  key: "user",
+  key: "root",
   version: 1, // 🔹 Đảm bảo version >= 1
   storage, // luu tru trong localStorage
   whitelist: ["user", "cart"], // Chỉ lưu trạng thái `user` , `cart`

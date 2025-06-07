@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "../../redux/features/userSlice";
 import { LogoutOutlined } from "@ant-design/icons";
 import api from "./../../config/api";
+import { persistor } from './../../redux/store';
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -60,6 +61,7 @@ const Header = () => {
                 className="logout"
                 onClick={() => {
                   dispatch(logout());
+                  persistor.purge();  // Xoá redux-persist khỏi localStorage
                   localStorage.removeItem("token");
                   setIsLoggedIn(false);
                   navigate("/loginAndRegister");
