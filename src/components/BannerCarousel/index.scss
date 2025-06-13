@@ -2,6 +2,7 @@
   padding: 20px 0;
   background: #f9f6f2;
   position: relative;
+  height: 50vh;
   .swiper-button-next,
   .swiper-button-prev {
     color: gray !important; // màu xám
@@ -44,7 +45,7 @@
 }
 
 .banner-card {
-  width: 340px;
+  width: 70%;
   max-width: 100%;
   background: #fff;
   border-radius: 12px;

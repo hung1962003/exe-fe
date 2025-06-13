@@ -44,8 +44,8 @@ const ProductDetail = () => {
   const fetchProductDetail = async () => {
     try {
       const response = await api.get(`products/${id}`);
-      const idCategory = parseInt(response.data.category.id, 10);
-      setIdCategory(idCategory);
+      //const idCategory = parseInt(response.data.category.id, 10);
+      //setIdCategory(idCategory);
       console.log("Product fetched:", response.data);
       return setProduct(response.data);
     } catch (error) {
@@ -58,34 +58,37 @@ const ProductDetail = () => {
     fetchProductDetail();
   }, [id]);
 
-  const fetchDataCategory = async () => {
-    try {
-      const responseCategory = await api.get(`categories/${idCategory}`);
-      setCategory(responseCategory.data);
-      const responseSolution = await api.get(
-        `Solutions/${responseCategory.data.solutionId}`
-      );
-      setSolution(responseSolution.data);
-    } catch (error) {
-      toast.error("Lỗi khi gọi API!"); // Hiển thị thông báo lỗi
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    fetchDataCategory();
-  }, []);
+  // const fetchDataCategory = async () => {
+  //   try {
+  //     const responseCategory = await api.get(`categories/${idCategory}`);
+  //     setCategory(responseCategory.data);
+  //     const responseSolution = await api.get(
+  //       `Solutions/${responseCategory.data.solutionId}`
+  //     );
+  //     setSolution(responseSolution.data);
+  //   } catch (error) {
+  //     toast.error("Lỗi khi gọi API!"); // Hiển thị thông báo lỗi
+  //     console.log(error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   fetchDataCategory();
+  // }, []);
 
-  if (!product || !category || !solution) {
-    return <p>Loading...</p>;
-  }
+  // if (!product || !category || !solution) {
+  //   return <p>Loading...</p>;
+  // }
 
   // Gọi hàm fetchDataCategory ngay khi component mount
 
   const imageList = imageProducts.map((item) => item.imageUrl);
-  console.log("imageList", imageList);
+  //console.log("imageList", imageList);
+  if (!product) {
+    return <p>Đang tải thông tin sản phẩm...</p>;
+  }
   return (
-    <div style={{ padding: 40, marginLeft: "10vw", marginRight: "10vw" }}>
-      <Breadcrumb
+    <div style={{ padding: 40, marginLeft: "10vw", marginRight: "10vw" ,backgroundColor: "#fdf6ee"}}>
+      {/* <Breadcrumb
         style={{ paddingLeft: "10%", marginBottom: "2vh", fontSize: "1rem" }}
         items={[
           {
@@ -98,7 +101,7 @@ const ProductDetail = () => {
             title: <Link to="">{solution?.name}</Link>,
           },
         ]}
-      />
+      /> */}
       <Row
         gutter={16}
         className="productdetail"
@@ -107,7 +110,7 @@ const ProductDetail = () => {
         <Col span={8}>
           {/* <CarouselProduct numberOfSlide={1} id={productDetailId} />
           <CarouselProduct numberOfSlide={4} id={productDetailId} /> */}
-          <CarouselProductWithLightbox images={imageList} />
+          {/* <CarouselProductWithLightbox images={imageList} /> */}
         </Col>
         <Col span={16}>
           <Card
@@ -123,7 +126,7 @@ const ProductDetail = () => {
                   marginTop: "10px",
                 }}
               >
-                {product.name}
+                {product.productName}
               </span>
             }
             style={{
@@ -138,17 +141,17 @@ const ProductDetail = () => {
               style={{
                 fontSize: "2.25rem",
                 fontWeight: "600",
-                color: "#2c54e6",
+                color: "#8a9c7c",
                 paddingBottom: "3vh",
               }}
             >
               Giá: {formatMoneyToVND(product.price)}
-              <span style={{ fontWeight: "400", fontSize: "1.5rem" }}>
+              {/* <span style={{ fontWeight: "400", fontSize: "1.5rem" }}>
                 {" "}
                 / {product.unit.name}
-              </span>
+              </span> */}
             </p>
-            <div className="productdetail-info">
+            {/* <div className="productdetail-info">
               <p className="productdetail-info__title">Thương Hiệu </p>
               <p className="productdetail-info__name">{product.brand.name}</p>
             </div>
@@ -184,7 +187,7 @@ const ProductDetail = () => {
               <Link to={`/product`} className="productdetail-info__name">
                 {product.category.name}
               </Link>
-            </div>
+            </div> */}
 
             <div
               className="productdetail-info"
@@ -199,10 +202,10 @@ const ProductDetail = () => {
               </p>
             </div>
 
-            <div className="productdetail-info">
+            {/* <div className="productdetail-info">
               <p className="productdetail-info__title">Dạng</p>
               <p className="productdetail-info__name">{product.unit.name}</p>
-            </div>
+            </div> */}
 
             <div style={{ marginBottom: 20 }}>
               <QuantitySelector
@@ -216,14 +219,14 @@ const ProductDetail = () => {
               type="primary"
               icon={<ShoppingCartOutlined />}
               size="large"
-              style={{ borderRadius: "8px" }}
+              style={{ borderRadius: "8px", backgroundColor: "#8a9c7c" }}
             >
               Thêm vào giỏ hàng
             </Button>
           </Card>
         </Col>
       </Row>
-      <ProductDetailInfo
+      {/* <ProductDetailInfo
         productDescription={product.productDetail?.productDescription || ""}
         ingredient={product.productDetail?.ingredient || ""}
         effect={product.productDetail?.effect || ""}
@@ -231,7 +234,7 @@ const ProductDetail = () => {
         sideEffect={product.productDetail?.sideEffect || ""}
         note={product.productDetail?.note || ""}
         preserve={product.productDetail?.preserve || ""}
-      />
+      /> */}
     </div>
   );
 };

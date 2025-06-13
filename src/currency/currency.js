@@ -6,3 +6,10 @@ export const formatMoneyToVND = (amount) => {
       maximumFractionDigits: 0,
     }).format(amount);
   };
+  export  function formatDateVN(dateString) {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day} tháng ${month}, ${year}`;
+  }

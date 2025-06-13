@@ -1,13 +1,17 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./index.scss";
 import CarouselForYou from "../../components/SliderMain";
 import { Typography } from "antd";
-import { formatMoneyToVND } from "./../../currency/currency";
+import { formatMoneyToVND } from "../../currency/currency";
+import api from "../../config/api";
+import { useParams } from "react-router";
+
 
 const WorkshopDetails = () => {
   const { Text } = Typography;
   const { hasMoreDate, isHasMoreDate } = useState();
   const ticketInfoRef = useRef(null);
+  const {id} = useParams();
   const data = {
     title: "Náo Loạn Tiếu Lâm Đường",
     intro:
@@ -41,6 +45,17 @@ const WorkshopDetails = () => {
     }
   };
 
+  const handleUserAccess = async () => {
+    try {
+      const response = await api.post("workshop/user-access",{id});
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    handleUserAccess();
+  }, []);
   return (
     <div className="workshop-page">
       {/* Banner vé */}

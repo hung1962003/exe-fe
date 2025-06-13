@@ -31,28 +31,37 @@ function Footer() {
   const infoItems = [
     {
       name: "Phone",
-      logo: "/img/phone.png",
+      logo: "https://res.cloudinary.com/dur2ihrqo/image/upload/v1749372325/Phone_tlbgds.png",
       iconClass: "fa fa-phone",
       text: "+123-234-1234",
     },
     {
       name: "Email",
-      logo: "/img/email.png",
+      logo: "https://res.cloudinary.com/dur2ihrqo/image/upload/v1749372314/Email_smwbek.png",
       iconClass: "fa fa-envelope",
       text: "hello@awesomesite.com",
     },
     {
       name: "Address",
-      logo: "/img/address.png",
+      logo: "https://res.cloudinary.com/dur2ihrqo/image/upload/v1749372309/Address_elo4e4.png",
       iconClass: "fa fa-map-marker",
       text: "99 Roving St., Big City, PKU 23456",
     },
   ];
 
   const socialIcons = [
-    { src: "/img/facebook.png", alt: "Facebook" },
-    { src: "/img/instagram.png", alt: "Instagram" },
-    { src: "/img/youtube.png", alt: "YouTube" },
+    {
+      src: "https://res.cloudinary.com/dur2ihrqo/image/upload/v1749372317/Facebook_ujpigr.png",
+      alt: "Facebook",
+    },
+    {
+      src: "https://res.cloudinary.com/dur2ihrqo/image/upload/v1749372320/Instagram_pef1lg.png",
+      alt: "Instagram",
+    },
+    {
+      src: "https://res.cloudinary.com/dur2ihrqo/image/upload/v1749372328/Youtube_jwithv.png",
+      alt: "YouTube",
+    },
   ];
 
   return (
@@ -60,13 +69,16 @@ function Footer() {
       <div className="footer__left">
         <img src="/img/footer.png" alt="Logo" className="footer__logo" />
         <p className="footer__desc">
-        Nulla sit amet fermentum augue. In ullamcorper<br /> orci vitae lectus laoreet luctus maecenas pharetra<br /> cras auctor dui augue. </p>
+          Nulla sit amet fermentum augue. In ullamcorper
+          <br /> orci vitae lectus laoreet luctus maecenas pharetra
+          <br /> cras auctor dui augue.{" "}
+        </p>
         <div className="footer__socials">
           {socialIcons.map((icon, idx) => (
             <img key={idx} src={icon.src} alt={icon.alt} />
           ))}
-            </div>
-          </div>
+        </div>
+      </div>
 
       <div className="footer__center">
         {footerLinks.map((section, index) => (
@@ -76,7 +88,7 @@ function Footer() {
               {section.items.map((item, i) => (
                 <li key={i}>
                   <a href={item.href}>{item.label}</a>
-              </li>
+                </li>
               ))}
             </ul>
           </div>
@@ -89,7 +101,7 @@ function Footer() {
               <img src={info.logo} alt={info.name} />
               <div className="footer__infoname">
                 <span>{info.name}</span>
-                <i className={info.iconClass}>{info.text}</i> 
+                <i className={info.iconClass}>{info.text}</i>
               </div>
             </div>
           ))}

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://35.232.143.173:8080/api",
+  baseURL: "http://localhost:8080/api",
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
@@ -9,7 +9,7 @@ const api = axios.create({
 
   transformRequest: [
     (data) => {
-      return JSON.stringify(data);
+      return JSON.stringify(data);  
     },
   ],
 

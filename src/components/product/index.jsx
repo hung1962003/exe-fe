@@ -26,6 +26,7 @@ const CardProduct = ({ product, imageUrl }) => {
         dispatch(addProductToCart(response.data));
       } catch (error) {
         toast.error("Error while resolving!!");
+        console.log(error);
       }
     } else {
       notification.error({
@@ -37,7 +38,7 @@ const CardProduct = ({ product, imageUrl }) => {
   };
   const navigate = useNavigate();
   const handleNavigateProductDetail = () => {
-    navigate("/product/" + product.id);
+    navigate("/product/" + product.productId);
   };
   return (
     <motion.div

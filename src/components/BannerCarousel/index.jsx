@@ -12,17 +12,20 @@ export default function BannerCarousel({ title, data }) {
       <div className="banner-carousel-title">{title}</div>
       <Swiper
         modules={[Navigation, Pagination]}
-        spaceBetween={20}
+        spaceBetween={10}
         slidesPerView={5}
         navigation
         autoplay={true}
         // pagination={{ clickable: true }}
         loop={true}
         breakpoints={{
-          1200: { slidesPerView: 4 },
-          900: { slidesPerView: 3 },
-          600: { slidesPerView: 2 },
-          0: { slidesPerView: 1 },
+          1200: { slidesPerView: 5 },
+          900: { slidesPerView: 4 },
+          600: { slidesPerView: 3 },
+          0: { slidesPerView: 2 },
+        }}
+        style={{
+          overflow: "visible",
         }}
       >
         {data.map((item, idx) => (

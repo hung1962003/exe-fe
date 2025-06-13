@@ -1,5 +1,5 @@
 //import { CiSearch } from "react-icons/ci";
-import { Button } from "antd";
+import { Button, Input } from "antd";
 import "./index.scss";
 import { TiUser } from "react-icons/ti";
 import { BiSolidCart } from "react-icons/bi";
@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "../../redux/features/userSlice";
 import { LogoutOutlined } from "@ant-design/icons";
 
-import { persistor } from './../../redux/store';
+import { persistor } from "./../../redux/store";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -45,12 +45,14 @@ const Header = () => {
       <div className="header">
         <div className="header__left" onClick={handleNavigateHomePage}>
           <img
-            src=" public/img/header.png"
+            src="https://res.cloudinary.com/dur2ihrqo/image/upload/v1749372179/footer_mqh6fc.png"
             alt="Logo"
             className="header__logo"
           />
         </div>
-
+        <div className="header__center">
+          
+        </div>
         <div className="header__right">
           {isLoggedIn ? (
             <>
@@ -61,7 +63,7 @@ const Header = () => {
                 className="logout"
                 onClick={() => {
                   dispatch(logout());
-                  persistor.purge();  // Xoá redux-persist khỏi localStorage
+                  persistor.purge(); // Xoá redux-persist khỏi localStorage
                   localStorage.removeItem("token");
                   setIsLoggedIn(false);
                   navigate("/loginAndRegister");

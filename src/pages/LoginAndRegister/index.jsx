@@ -56,13 +56,41 @@ const LoginAndRegister = () => {
   const onFinishRegister = async (values) => {
     console.log(values);
     try {
-      await api.post("/Accounts/SignUp", values);
+      const registerData = {
+        password: values.password,
+        email: values.email,
+        phone: values.phone,
+        firstName: values.ten,
+        lastName: values.ho,
+      };
+      console.log(registerData);
+      await api.post("/auth/register", registerData);
       toast.success("Đăng ký thành công!");
-      navigate("/login");
+      // const loginData = {
+      //   email: values.email,
+      //   password: values.password,
+      // };
+      // setTimeout(() => {
+      //   onFinishLogin(loginData);
+      // }, 500); // đợi 500ms rồi mới gọi login
+      navigate("/Banlaai", {
+        state: {
+          email: values.email,
+          password: values.password,
+        },
+      });
     } catch (error) {
-      console.log(error);
-      toast.error("Đăng ký thất bại!");
-      form.resetFields();
+      console.log("Lỗi đăng ký:", error.response?.data);
+
+      const serverMessage = error.response?.data?.message;
+
+      if (serverMessage?.includes("Email")) {
+        toast.error("Email đã được sử dụng, vui lòng chọn email khác.");
+      } else {
+        toast.error("Đăng ký thất bại!");
+      }
+
+      registerForm.resetFields();
     }
   };
 
@@ -92,7 +120,10 @@ const LoginAndRegister = () => {
               <Form.Item
                 name="password"
                 label="Mật khẩu"
-                rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+                rules={[
+                  { required: true, message: "Vui lòng nhập mật khẩu!" },
+                  //{ min: 8, message: "Mật khẩu phải có ít nhất 8 ký tự!" },
+                ]}
               >
                 <Input.Password placeholder="Mật khẩu" />
               </Form.Item>
@@ -101,7 +132,7 @@ const LoginAndRegister = () => {
                 <Form.Item name="remember" valuePropName="checked" noStyle>
                   <Checkbox>Ghi nhớ đăng nhập</Checkbox>
                 </Form.Item>
-                <a href="#" className="forgot-password">
+                <a href="/forget-password" className="forgot-password">
                   Quên mật khẩu?
                 </a>
               </div>
@@ -149,7 +180,10 @@ const LoginAndRegister = () => {
               <Form.Item
                 name="email"
                 label="Email"
-                rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+                rules={[
+                  { required: true, message: "Vui lòng nhập email!" },
+                  { type: "email", message: "Email không hợp lệ!" },
+                ]}
               >
                 <Input placeholder="Email" />
               </Form.Item>
@@ -159,6 +193,10 @@ const LoginAndRegister = () => {
                 label="Số điện thoại"
                 rules={[
                   { required: true, message: "Vui lòng nhập số điện thoại!" },
+                  {
+                    pattern: /^\d{10}$/,
+                    message: "Số điện thoại phải có 10 chữ số!",
+                  },
                 ]}
               >
                 <Input placeholder="Số điện thoại" />

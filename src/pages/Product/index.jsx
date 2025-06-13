@@ -7,14 +7,16 @@ import { RightOutlined } from "@ant-design/icons";
 
 import CardProduct from "../../components/product";
 import { formatMoneyToVND } from "../../currency/currency";
+import { useNavigate } from "react-router";
 
 const ShoppingPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState({});
-  const [pageNumber, setPageNumber] = useState(1);
+  const [pageNumber, setPageNumber] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [filterPrice, setFilterPrice] = useState(0);
+  const navigate = useNavigate();
 
   const fetchProducts = async () => {
     try {
@@ -24,23 +26,25 @@ const ShoppingPage = () => {
       // Apply filter conditionally
       if (filterPrice === 100000) {
         response = await api.get(
-          `Products/price-under-100000?pageNumber=${pageNumber}&pageSize=3`
+          `Products/price-under-100000?pageNumber=${pageNumber}&pageSize=10`
         );
       } else if (filterPrice === 200000) {
         response = await api.get(
-          `Products/price-over-200000?pageNumber=${pageNumber}&pageSize=3`
+          `Products/price-over-200000?pageNumber=${pageNumber}&pageSize=10`
         );
       } else if (filterPrice === 400000) {
         response = await api.get(
-          `Products/price-over-400000?pageNumber=${pageNumber}&pageSize=3`
+          `Products/price-over-400000?pageNumber=${pageNumber}&pageSize=10`
         );
       } else if (filterPrice === 500000) {
         response = await api.get(
-          `Products/price-over-500000?pageNumber=${pageNumber}&pageSize=3`
+          `Products/price-over-500000?pageNumber=${pageNumber}&pageSize=10`
         );
       } else {
         // response = await api.get(`Products?pageNumber=${pageNumber}&pageSize=3`);
-        response = await api.get(`products`);
+        response = await api.get(`products?page=${pageNumber}&size=10`, {
+          timeout: 10000, // Tăng timeout lên 10 giây
+        });
         console.log(response);
       }
 
@@ -50,7 +54,8 @@ const ShoppingPage = () => {
       ) {
         setHasMore(false);
       } else {
-        setProducts((prev) => [...prev, ...response.data.data]); // vì data là mảng
+        setProducts((prev) => [...prev, ...response.data.data.content]); // vì data là mảng
+        console.log(products);
       }
     } catch (error) {
       toast.error("Lỗi khi lấy danh sách sản phẩm!");
@@ -85,10 +90,12 @@ const ShoppingPage = () => {
   const handleFilterChange = (price) => {
     setFilterPrice((prev) => (prev === price ? 0 : price)); // Toggle filter
     setProducts([]); // Reset products when filter changes
-    setPageNumber(1);
+    setPageNumber(0);
     setHasMore(true);
   };
-
+  const handleNavigateProductDetail = (id) => {
+    navigate("/product/" + id);
+  };
   return (
     <div className="shopping-page-container">
       <Row gutter={24}>

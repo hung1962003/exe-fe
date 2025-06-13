@@ -7,10 +7,10 @@ const ActivateWorkshopOwner = () => {
     <div className="activate-bg">
       <div className="activate-card">
         <div className="activate-left">
-          <h2>Kích hoạt tài khoản để tiếp tục sử dụng</h2>
+          <h2>Thông tin thanh toán </h2>
           <Form layout="vertical" className="activate-form">
             <Form.Item name="shopName">
-              <Input placeholder="Tên Cửa Hàng*" />
+              <Input placeholder="Tên Chủ Tài Khoản*" />
             </Form.Item>
             <Form.Item name="bankAccount">
               <Input placeholder="Tài Khoản Ngân Hàng*" />
@@ -18,12 +18,10 @@ const ActivateWorkshopOwner = () => {
             <Form.Item name="address">
               <Input placeholder="Địa Chỉ*" />
             </Form.Item>
-            <Form.Item name="idCard">
-              <Input placeholder="CMND/CCCD*" />
-            </Form.Item>
+            
             <div className="activate-actions">
               <Button className="brown-btn">Quay Về</Button>
-              <Button className="brown-btn" type="primary">Đăng Kí</Button>
+              <Button className="brown-btn" type="primary">Tiếp theo </Button>
             </div>
           </Form>
         </div>

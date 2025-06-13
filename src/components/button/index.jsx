@@ -9,7 +9,7 @@ const QuantitySelector= ({
   max = 99,
   onChange,
 }) => {
-  const [value, setValue] = useState<number>(defaultValue);
+  const [value, setValue] = useState(defaultValue);
 
   // Giảm số lượng
   const handleMinus = () => {

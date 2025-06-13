@@ -16,9 +16,19 @@ import ProductPage from "./pages/Product";
 import UploadExample from "./utils/imagekit-upload";
 import WorkshopPage from "./pages/WorkshopPage";
 import HistoryTransaction from "./pages/HistoryTransaction";
-import WorkshopDetails from "./pages/WorkshopDetails";
+
 import PaymentQR from "./pages/PaymentQR";
 import BankAccountRegister from "./pages/BankAccount";
+import ChangePassword from "./pages/changepassword";
+import LayoutProfile from "./components/layoutprofile";
+import Profile from "./pages/Profile/index";
+import HistoryTicket from "./pages/History-Ticket";
+import ForgetPassword from "./pages/ForgetPassword";
+import ResetPassword from "./pages/ResetPassword";
+import MarketingPage from "./pages/Marketing";
+import WorkshopDetailsPage from "./pages/WorkshopDetailsPage";
+import WorkshopDetail from "./pages/WorkshopDetails";
+
 function App() {
   const router = createBrowserRouter([
     {
@@ -38,8 +48,8 @@ function App() {
           element: <PaymentQR />,
         },
         {
-          path:"/BankAccountRegister",
-          element:<BankAccountRegister/>
+          path: "/BankAccountRegister",
+          element: <BankAccountRegister />,
         },
         {
           path: "/services",
@@ -63,7 +73,7 @@ function App() {
         },
         {
           path: "/workshop/:id",
-          element: <WorkshopDetails />,
+          element: <WorkshopDetail />,
         },
         {
           path: "/product",
@@ -74,12 +84,46 @@ function App() {
           element: <UploadExample />,
         },
         {
+          path: "/workshopdetails",
+          element: <WorkshopDetailsPage />,
+        },
+        {
           path: "/workshop",
           element: <WorkshopPage />,
         },
         {
           path: "/historyTransaction",
           element: <HistoryTransaction />,
+        },
+        {
+          path: "forget-password",
+          element: <ForgetPassword />,
+        },
+        {
+          path: "reset-password",
+          element: <ResetPassword />,
+        },
+        {
+          path: "marketing",
+          element: <MarketingPage />,
+        },
+        {
+          path: "/my-account",
+          element: <LayoutProfile />,
+          children: [
+            {
+              path: "/my-account/profile",
+              element: <Profile />,
+            },
+            {
+              path: "change-password",
+              element: <ChangePassword />,
+            },
+            {
+              path: "history-ticket",
+              element: <HistoryTicket />,
+            },
+          ],
         },
       ],
     },
