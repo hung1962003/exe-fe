@@ -62,7 +62,16 @@ const participants = [
   },
 ];
 const tabs = ["Overview", "Workshops", "Người tham gia", "Phân tích"];
-const decode = jwtDecode(localStorage.getItem("token"));
+const token = localStorage.getItem("token");
+let decode;
+if (typeof token === "string" && token) {
+  decode = jwtDecode(token);
+  console.log("Thông tin người dùng:", decode);
+} else {
+  console.warn("Không tìm thấy token hợp lệ");
+  // có thể redirect về trang login tại đây
+}
+
 const id = decode.id;
 
 function SubMenuDashboardInstructor() {

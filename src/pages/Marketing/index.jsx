@@ -136,12 +136,13 @@ const MarketingPage = () => {
     }
   };
   const token = localStorage.getItem("token");
-  console.log("Token received:", token);
   let decodedToken;
-  if (typeof token === "string") {
+  if (typeof token === "string" && token) {
     decodedToken = jwtDecode(token);
+    console.log("Thông tin người dùng:", decodedToken);
   } else {
-    console.error("Token không hợp lệ:", token);
+    console.warn("Không tìm thấy token hợp lệ");
+    // có thể redirect về trang login tại đây
   }
 
   const instructorId = decodedToken.id;

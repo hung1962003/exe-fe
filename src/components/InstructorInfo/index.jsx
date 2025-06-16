@@ -15,10 +15,14 @@ const InstructorInfo = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
+    if (typeof token === "string" && token) {
       const decoded = jwtDecode(token);
       setInstructor(decoded);
       console.log(decoded);
+      console.log("Thông tin người dùng:", decoded);
+    } else {
+      console.warn("Không tìm thấy token hợp lệ");
+      // có thể redirect về trang login tại đây
     }
   }, []);
 

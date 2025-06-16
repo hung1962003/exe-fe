@@ -23,8 +23,16 @@ function YouknowWho() {
 
       const user = response.data;
       localStorage.setItem("token", user.token);
-      const decoded = jwtDecode(localStorage.getItem("token"));
-      
+      const token = localStorage.getItem("token");
+      let decoded;
+      if (typeof token === "string" && token) {
+        decoded = jwtDecode(token);
+        console.log("Thông tin người dùng:", decoded);
+      } else {
+        console.warn("Không tìm thấy token hợp lệ");
+        // có thể redirect về trang login tại đây
+      }
+
       localStorage.setItem("role", decoded.role);
       dispatch(login(user));
       toast.success("Đăng nhập thành công!");
