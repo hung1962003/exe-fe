@@ -72,9 +72,9 @@ if (typeof token === "string" && token) {
   // có thể redirect về trang login tại đây
 }
 
-const id = decode.id;
+const id = decode?.id;
 
-function SubMenuDashboardInstructor() {
+function  SubMenuDashboardInstructor() {
   const [activeTab, setActiveTab] = useState(0);
   const [workshops, setWorkshops] = useState([]);
 
