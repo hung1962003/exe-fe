@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./index.scss";
 import { Button, Upload, Image, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { uploadImageToCloudinary } from "../../utils/upload";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router";
 
 const InstructorInfo = () => {
   const [fileList, setFileList] = useState([]);
   const [previewImage, setPreviewImage] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [instructor, setInstructor] = useState({});
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const decoded = jwtDecode(token);
+      setInstructor(decoded);
+      console.log(decoded);
+    }
+  }, []);
 
   // Hàm đọc file thành base64 để preview
   const getBase64 = (file) =>
@@ -75,7 +88,7 @@ const InstructorInfo = () => {
           />
         )}
         <div>
-          <div className="dashboard-header__name">Hưng Nguyễn</div>
+          <div className="dashboard-header__name">{instructor.firstName}</div>
           <div className="dashboard-header__role">Instructor</div>
           <div className="dashboard-header__welcome">
             Welcome to your Workshop Dashboard
@@ -88,8 +101,18 @@ const InstructorInfo = () => {
           <button className="history-btn">Lịch sử giao dịch</button>
         </div>
         <div className="dashboard-header__row">
-          <button className="dashboard-btn">Xem Dashboard</button>
-          <button className="marketing-btn">Đề Xuất Marketing</button>
+          <button
+            className="dashboard-btn"
+            onClick={() => navigate("/dashboardInstructor")}
+          >
+            Xem Dashboard
+          </button>
+          <button
+            className="marketing-btn"
+            onClick={() => navigate("/marketing")}
+          >
+            Đề Xuất Marketing
+          </button>
         </div>
       </div>
     </div>

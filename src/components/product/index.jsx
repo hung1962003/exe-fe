@@ -18,7 +18,7 @@ const CardProduct = ({ product, imageUrl }) => {
   const handleAddFoodToCart = async () => {
     if (user) {
       try {
-        const response = await api.post("CartProducts", {
+        const response = await api.post("cart/items", {
           quantity: 1,
           productId: product.id,
         });

@@ -1,12 +1,13 @@
 .submenu-instructor-wrapper {
   background: #fdf6ec;
-  max-height: 100vh;
-
+  // max-height: 100vh;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   padding: 1vw 0 0 0;
   align-items: center;
+  // padding-bottom: 100px;
 }
 
 .submenu-tabs {
@@ -40,8 +41,13 @@
   display: flex;
   justify-content: center;
   width: 100%;
+  // padding-bottom: 100px;
+ 
+  
 }
-
+.overview-dashboard-wrapper {
+  flex: 1;
+}
 .workshop-list {
   background: transparent;
   display: grid;
@@ -86,18 +92,18 @@
 .workshop-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #fff;
+  color: #b07a4a;
   margin-bottom: 2px;
 }
 
 .workshop-author {
-  color: #f5efe5;
+  color: #b07a4a;
   font-size: 0.98rem;
   margin-bottom: 8px;
 }
 
 .workshop-desc {
-  color: #fff;
+  color: #b07a4a;
   font-size: 1rem;
   margin-bottom: 12px;
 }
@@ -204,5 +210,12 @@
   .participants-table td {
     padding: 8px 6px;
     font-size: 0.95rem;
+  }
+}
+
+.overview-dashboard {
+  margin-bottom: 40px;
+  @media (max-width: 900px) {
+    margin-bottom: 24px;
   }
 }

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: "http://34.96.206.25:8080/api",
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
@@ -9,10 +9,9 @@ const api = axios.create({
 
   transformRequest: [
     (data) => {
-      return JSON.stringify(data);  
+      return JSON.stringify(data);
     },
   ],
-
 });
 
 api.interceptors.request.use(

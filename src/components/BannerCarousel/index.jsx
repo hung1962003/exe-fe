@@ -4,9 +4,14 @@ import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "./index.scss";
+import { useNavigate } from "react-router";
 
 // Nhận props: title, data (array)
 export default function BannerCarousel({ title, data }) {
+  const navigate = useNavigate();
+  const handleNavigate = (id) => {
+    navigate(`/workshop/${id}`);
+  };
   return (
     <div className="banner-carousel">
       <div className="banner-carousel-title">{title}</div>
@@ -30,7 +35,7 @@ export default function BannerCarousel({ title, data }) {
       >
         {data.map((item, idx) => (
           <SwiperSlide
-            key={item.id}
+            key={item.workshopId}
             style={{
               position: "relative",
               marginLeft: idx === 0 ? 40 : undefined,
@@ -38,7 +43,12 @@ export default function BannerCarousel({ title, data }) {
           >
             <span className="banner-rank">{idx + 1}</span>
             <div className={`banner-card${idx === 0 ? " highlight" : ""}`}>
-              <img src={item.image} alt={item.title} className="banner-img" />
+              <img
+                src={item.urlImage}
+                alt={item.title}
+                className="banner-img"
+                onClick={() => handleNavigate(item.workshopId)}
+              />
               <div className="banner-title-main">{item.title}</div>
             </div>
           </SwiperSlide>

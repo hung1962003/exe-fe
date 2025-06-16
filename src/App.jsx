@@ -27,7 +27,8 @@ import ForgetPassword from "./pages/ForgetPassword";
 import ResetPassword from "./pages/ResetPassword";
 import MarketingPage from "./pages/Marketing";
 import WorkshopDetailsPage from "./pages/WorkshopDetailsPage";
-import WorkshopDetail from "./pages/WorkshopDetails";
+import WorkshopDetails from "./pages/WorkshopDetails";
+
 
 function App() {
   const router = createBrowserRouter([
@@ -73,7 +74,7 @@ function App() {
         },
         {
           path: "/workshop/:id",
-          element: <WorkshopDetail />,
+          element: <WorkshopDetails />,
         },
         {
           path: "/product",

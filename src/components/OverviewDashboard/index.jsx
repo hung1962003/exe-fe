@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./index.scss";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -12,6 +12,8 @@ import {
   Legend,
   Tooltip,
 } from "chart.js";
+import api from "../../config/api";
+import { Select } from "antd";
 
 Chart.register(
   LineElement,
@@ -46,21 +48,23 @@ const data = {
   datasets: [
     {
       label: "Doanh thu",
-      data: Array(15).fill(0),
+      data: [0, 1, 2, 1.5, 3, 2.5, 4, 3.5, 5, 4.5, 3, 2, 1, 2, 10],
       borderColor: "#a259ff",
       backgroundColor: "#a259ff",
       yAxisID: "y1",
       tension: 0.4,
       pointRadius: 2,
+      borderWidth: 10,
     },
     {
       label: "Số vé bán",
-      data: Array(15).fill(0),
+      data: [0, 2, 1, 3, 2, 4, 3, 5, 4, 3, 2, 1, 2, 3, 100],
       borderColor: "#1abc60",
       backgroundColor: "#1abc60",
       yAxisID: "y2",
       tension: 0.4,
       pointRadius: 2,
+      borderWidth: 10,
     },
   ],
 };
@@ -90,20 +94,37 @@ const options = {
       type: "linear",
       position: "left",
       title: { display: true, text: "Doanh thu", color: "#fff" },
-      ticks: { color: "#fff" },
+      ticks: { color: "#fff", stepSize: 1 },
       grid: { color: "#333" },
+      min: 0,
     },
     y2: {
       type: "linear",
       position: "right",
       title: { display: true, text: "Số vé bán", color: "#fff" },
-      ticks: { color: "#fff" },
+      ticks: { color: "#fff", stepSize: 1 },
       grid: { drawOnChartArea: false },
+      min: 0,
     },
   },
 };
 
 export default function OverviewDashboard() {
+  const [seletedDiscount, setSeletectedDiscount] = useState(null);
+  const [selectedDiscountPercentage, setSelectedDiscountPercentage] =
+    useState(0);
+  const [listDiscount, setListDiscount] = useState([]);
+  const fetchDiscountList = async () => {
+    try {
+      const response = await api.get("Discount");
+      const discounts = response.data.items;
+      const filterDiscount = discounts.filter((item) => item.id !== 1);
+      setListDiscount(filterDiscount);
+    } catch (error) {
+      console.log(error);
+      toast.error("Error while fetching data!!");
+    }
+  };
   return (
     <div className="overview-dashboard">
       <div className="overview-dashboard__header">
@@ -113,9 +134,32 @@ export default function OverviewDashboard() {
           </span>
           04 Tháng 06, 2025 - 00:00
         </div>
-        <button className="overview-dashboard__switch-btn">
-          Đổi suất diễn
-        </button>
+        <div>
+          <Select
+            style={{ width: "100%", marginTop: 10 }}
+            placeholder="Chon workshop"
+            onChange={(value, option) => {
+              setSeletectedDiscount(value);
+              setSelectedDiscountPercentage(option?.data_percentage || 0);
+            }}
+          >
+            {listDiscount.map((discount) => (
+              <Option
+                key={discount.id}
+                value={discount.id}
+                data_percentage={discount.percentage}
+              >
+                {`${discount.code} - Giảm ${discount.percentage}%`}
+              </Option>
+            ))}
+          </Select>
+          <button className="overview-dashboard__switch-btn">
+            Đổi suất diễn
+          </button>
+          <button className="overview-dashboard__switch-btn">
+            Chon workshop
+          </button>
+        </div>
       </div>
       <h2 className="overview-dashboard__title">Doanh thu</h2>
       <div className="overview-dashboard__overview">
@@ -161,13 +205,24 @@ export default function OverviewDashboard() {
           <span className="dot purple"></span> Doanh thu
           <span className="dot green" style={{ marginLeft: 24 }}></span> Số vé
           bán
-          <div className="overview-dashboard__chart-range">
+          {/* <div className="overview-dashboard__chart-range">
             <button className="range-btn">24 giờ</button>
             <button className="range-btn active">30 ngày</button>
-          </div>
+          </div> */}
         </div>
-        <div className="overview-dashboard__chart">
-          <Line data={data} options={options} height={300} />
+        <div
+          className="overview-dashboard__chart"
+          style={{ maxHeight: "450px", height: "450px" }}
+        >
+          <Line
+            data={data}
+            height={400}
+            options={{
+              ...options,
+              maintainAspectRatio: false,
+              responsive: true,
+            }}
+          />
         </div>
       </div>
       <div className="overview-dashboard__detail">
@@ -182,13 +237,13 @@ export default function OverviewDashboard() {
             <div>Tỉ lệ bán</div>
           </div>
           {/* Dữ liệu mẫu, bạn có thể map từ props/data */}
-          {/* <div className="overview-dashboard__table-row">
+          <div className="overview-dashboard__table-row">
             <div>Vé thường</div>
             <div>100.000đ</div>
             <div>0</div>
             <div>0</div>
             <div>0%</div>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>

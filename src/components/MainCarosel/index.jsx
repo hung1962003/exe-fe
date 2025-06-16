@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { useNavigate } from "react-router-dom";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -9,6 +10,15 @@ import VideoCard from "../VideoCard";
 
 export default function MainCarosel({ data }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const navigate = useNavigate();
+
+  const handleDetailClick = (e, link) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (link) {
+      window.open(link, "_blank");
+    }
+  };
 
   return (
     <div className="main-carousel">
@@ -47,9 +57,12 @@ export default function MainCarosel({ data }) {
               )}
               <div className="main-carousel-content">
                 {item.link && (
-                  <a href={item.link} className="main-carousel-btn">
+                  <button
+                    onClick={(e) => handleDetailClick(e, item.link)}
+                    className="main-carousel-btn"
+                  >
                     Xem chi tiết
-                  </a>
+                  </button>
                 )}
               </div>
             </div>

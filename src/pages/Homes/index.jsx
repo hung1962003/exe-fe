@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Input, Tooltip } from "antd";
+import { Button, Input, Tooltip, Spin } from "antd";
 import {
   YoutubeOutlined,
   GithubOutlined,
@@ -11,6 +11,7 @@ import CarouselForYou from "../../components/SliderMain";
 import BannerCarousel from "../../components/BannerCarousel";
 import MainCarosel from "../../components/MainCarosel";
 import api from "../../config/api";
+import { useNavigate } from "react-router";
 
 function Home() {
   // const decode = () => {
@@ -19,15 +20,18 @@ function Home() {
   //   const decoded = jwtDecode(token);
   //   console.log(decoded);
   // };
-  const [isdataUpcoming, setDataUpcoming] = useState([]);
+
   const [visibleCount, setVisibleCount] = useState(4);
-  const dataUpcoming = async () => {
-    const results = await api.get("/workshops/upcoming");
-    setDataUpcoming(results.data);
-  };
-  useEffect(() => {
-    dataUpcoming();
-  }, []);
+  const [loading, setLoading] = useState(true);
+  const [isDataUpcoming, setIsDataUpcoming] = useState([]);
+  const navigate = useNavigate();
+  // const dataUpcoming = async () => {
+  //   const results = await api.get("/workshops/upcoming");
+  //   setDataUpcoming(results.data);
+  // };
+  // useEffect(() => {
+  //   dataUpcoming();
+  // }, []);
   const suKienData = [
     { id: 1, image: "/img/youknowwho.png", title: "Sự kiện 1" },
     { id: 2, image: "/img/youknowwho.png", title: "Sự kiện 2" },
@@ -50,6 +54,7 @@ function Home() {
       id: 2,
       image: "/img/aaaa.png",
       title: "Sự kiện 2",
+      link: "https://chat.openai.com/",
       video:
         "../../../public/img/Administrator_ TimeRift - Scene1 - Windows, Mac, Linux - Unity 6 (6000.0.32f1) _DX11_ 2025-02-03 21-06-47.mp4",
     },
@@ -83,53 +88,148 @@ function Home() {
     },
     // ...
   ];
+
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      const [upcomingResponse] = await Promise.all([
+        api.get("/workshops/upcoming?page=0&size=10"),
+      ]);
+
+      setIsDataUpcoming(upcomingResponse.data.content);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const handleNavigateWorkshopMore = () => {
+    navigate("/workshop");
+  };
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
-    <div className="view">
-      <div className="block">
-        {" "}
-        <MainCarosel data={suKienData1} />
-      </div>
-      <div className="block">
-        {" "}
-        <BannerCarousel title="Sự kiện đặc biệt" data={suKienData} />{" "}
-      </div>
-      <div className="block">
-        {" "}
-        <CarouselForYou title="Dành cho bạn" />
-      </div>
-      <div className="block">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 8,
-          }}
-        >
-          <span style={{ fontWeight: 600, fontSize: 20 }}>Workshop</span>
-          <Button type="link" onClick={() => setVisibleCount(visibleCount + 4)}>
-            Xem thêm
-          </Button>
+    <div className="home-container">
+      <div className="view">
+        <div className="block">
+          {" "}
+          <MainCarosel data={suKienData1} />
         </div>
-        <CarouselForYou title="Workshop" />
-      </div>
-      <div className="block">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 8,
-          }}
-        >
-          <span style={{ fontWeight: 600, fontSize: 20 }}>
-            San khau & Nghe thuat
-          </span>
-          <Button type="link" onClick={() => setVisibleCount(visibleCount + 4)}>
-            Xem thêm
-          </Button>
+        <div className="block">
+          {" "}
+          <BannerCarousel title="Sự kiện đặc biệt" data={isDataUpcoming} />{" "}
         </div>
-        <CarouselForYou visibleCount={visibleCount} />
+        <div className="block">
+        <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 8,
+            }}
+          >
+            <span
+              style={{
+                color: "#a67c52",
+                fontSize: "1.2rem",
+                fontWeight: 700,
+                marginBottom: "18px",
+                textAlign: "left",
+                paddingLeft: "8px",
+              }}
+            >
+              Dành cho bạn
+            </span>
+          </div>
+          <CarouselForYou  data={isDataUpcoming} />
+        </div>
+        <div className="block">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 8,
+            }}
+          >
+            <span
+              style={{
+                color: "#a67c52",
+                fontSize: "1.2rem",
+                fontWeight: 700,
+                marginBottom: "18px",
+                textAlign: "left",
+                paddingLeft: "8px",
+              }}
+            >
+              Workshop
+            </span>
+            <Button
+              type="link"
+              style={{ color: "#b47b5c" }}
+              onClick={() => {
+                setVisibleCount(visibleCount + 4);
+                handleNavigateWorkshopMore();
+              }}
+            >
+              Xem thêm
+            </Button>
+          </div>
+          <CarouselForYou data={isDataUpcoming} />
+        </div>
+        <div className="block">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 8,
+            }}
+          >
+            <span
+              style={{
+                color: "#b47b5c",
+                fontSize: "1.2rem",
+                fontWeight: 700,
+                marginBottom: "18px",
+                textAlign: "left",
+                paddingLeft: "8px",
+              }}
+            >
+              San khau & Nghe thuat
+            </span>
+            <Button
+              type="link"
+              style={{ color: "#b47b5c" }}
+              onClick={() => {
+                setVisibleCount(visibleCount + 4);
+                handleNavigateWorkshopMore();
+              }}
+            >
+              Xem thêm
+            </Button>
+          </div>
+          <CarouselForYou visibleCount={visibleCount} data={isDataUpcoming} />
+        </div>
       </div>
     </div>
   );

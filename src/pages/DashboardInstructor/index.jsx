@@ -10,7 +10,7 @@ function DashboardInstructor() {
       <InstructorInfo />
       <NewWorkshop />
       <SubMenuDashboardInstructor />
-      <div className="workshop-cta-wrapper">
+      {/* <div className="workshop-cta-wrapper">
         <div className="workshop-cta-title">
           Bạn đã sẵn sàng tạo buổi hội thảo tiếp theo chưa?
         </div>
@@ -19,7 +19,7 @@ function DashboardInstructor() {
           trên toàn thế giới
         </div>
         <button className="workshop-cta-btn">Bắt đầu tạo</button>
-      </div>
+      </div> */}
     </div>
   );
 }

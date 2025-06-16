@@ -39,7 +39,7 @@ const Profile = () => {
   // Lấy dữ liệu tài khoản từ API
   const fetchAccountData = async () => {
     try {
-      const response = await api.get("Accounts/GetCurrentAccount");
+      const response = await api.get("users/me");
       setData(response.data);
     } catch (error) {
       console.error(error);
@@ -55,18 +55,17 @@ const Profile = () => {
   useEffect(() => {
     if (data) {
       form.setFieldsValue({
-        email: data.email,
-        address: data.address,
+        // email: data.email,
+        // address: data.address,
         firstName: data.firstName,
         lastName: data.lastName,
-        phoneNumber: data.phoneNumber,
-        birthday: data.birthday ? dayjs(data.birthday) : null,
+        phone: data.phone,
+        // birthday: data.birthday ? dayjs(data.birthday) : null,
         avatar: data.avatar, // server có thể trả về link ảnh cũ (nếu có)
       });
       // Nếu server trả về link ảnh => set vào state để hiển thị
       if (data.avatar) {
         setAvatarUrl(data.avatar);
-        // Đồng thời hiển thị fileList để preview
         setFileList([
           {
             uid: "-1",
@@ -74,10 +73,23 @@ const Profile = () => {
             url: data.avatar,
           },
         ]);
+      } else {
+        setFileList([]);
       }
     }
   }, [data, form]);
-
+  const getSvgDataUrl = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsText(file); // Đọc file SVG dưới dạng văn bản
+      reader.onload = () => {
+        const svgText = reader.result;
+        const encodedSvg = encodeURIComponent(svgText); // Mã hóa URL
+        const dataUrl = `data:image/svg+xml,${encodedSvg}`;
+        resolve(dataUrl);
+      };
+      reader.onerror = (error) => reject(error);
+    });
   // Hàm đọc file thành base64 để preview
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -88,14 +100,31 @@ const Profile = () => {
     });
   // Xử lý preview khi click vào ảnh
   const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
+    if (!file.url && !file.preview && !file.url?.startsWith("data:image/svg")) {
       file.preview = await getBase64(file.originFileObj);
     }
+    if (!file.url || file.url.startsWith("data:image/svg")) return;
     setPreviewImage(file.url || file.preview);
     setPreviewOpen(true);
   };
   // Xử lý khi thay đổi fileList (AntD)
-  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  const handleChange = async ({ fileList: newFileList }) => {
+    const updatedFileList = await Promise.all(
+      newFileList.map(async (file) => {
+        if (file.type === "image/svg+xml" && file.originFileObj) {
+          try {
+            const dataUrl = await getSvgDataUrl(file.originFileObj);
+            return { ...file, url: dataUrl, thumbUrl: dataUrl };
+          } catch (error) {
+            console.error("Lỗi khi tạo data URL cho SVG:", error);
+            return file;
+          }
+        }
+        return file;
+      })
+    );
+    setFileList(updatedFileList);
+  };
   // Hàm upload ảnh lên Cloudinary
   const handleFileUpload = async ({ file }) => {
     const imageUrl = await uploadImageToCloudinary(file);
@@ -112,26 +141,26 @@ const Profile = () => {
     }
   };
 
-  // Hàm logout
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    dispatch(logout());
-    message.success("Bạn đã đăng xuất!");
-    navigate("/login");
-  };
+  // // Hàm logout
+  // const handleLogout = () => {
+  //   localStorage.removeItem("token");
+  //   localStorage.removeItem("role");
+  //   dispatch(logout());
+  //   message.success("Bạn đã đăng xuất!");
+  //   navigate("/login");
+  // };
 
-  // Nút quay lại
-  const handleHome = () => {
-    navigate("/");
-  };
+  // // Nút quay lại
+  // const handleHome = () => {
+  //   navigate("/");
+  // };
 
   // Hàm xử lý khi form submit
   const onFinish = async (values) => {
     try {
       console.log("Form values:", values);
       // Gọi API update
-      await api.put("/user/me", values);
+      await api.put("/users/me", values);
       showSuccessToast("Update success");
       message.success("Cập nhật thông tin thành công!");
       // Fetch lại dữ liệu mới
@@ -158,6 +187,12 @@ const Profile = () => {
           onPreview={handlePreview}
           onChange={handleChange}
           maxCount={1}
+          previewFile={(file) => {
+            if (file.url?.startsWith("data:image/svg")) {
+              return Promise.reject(new Error("Không preview được ảnh SVG"));
+            }
+            return Promise.resolve(file.url || file.thumbUrl);
+          }}
         >
           {fileList.length >= 1 ? null : (
             <button style={{ border: 0, background: "none" }} type="button">
@@ -167,7 +202,7 @@ const Profile = () => {
           )}
         </Upload>
         {/* Preview khi click vào ảnh */}
-        {previewImage && (
+        {previewImage && !previewImage.startsWith("data:image/svg") && (
           <Image
             style={{ width: "200% ", height: "200%" }}
             className="custom-image"
@@ -188,31 +223,32 @@ const Profile = () => {
         layout="vertical"
         onFinish={onFinish}
         className="form-user"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
       >
-        <Row gutter={24}>
-          <Col xs={24} md={12}>
-            <Form.Item label="Email" name="email">
+        {/* <Form.Item label="Email" name="email">
               <Input type="email" />
-            </Form.Item>
-            <Form.Item label="Địa chỉ" name="address">
+            </Form.Item> */}
+        {/* <Form.Item label="Địa chỉ" name="address">
               <Input />
-            </Form.Item>
-            <Form.Item label="Tên" name="lastName">
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col xs={24} md={12}>
-            <Form.Item label="Ngày sinh" name="birthday">
+            </Form.Item> */}
+        <Form.Item label="Tên" name="lastName" style={{ width: "20%" }}>
+          <Input />
+        </Form.Item>
+
+        {/* <Form.Item label="Ngày sinh" name="birthday">
               <DatePicker style={{ width: "100%" }} />
-            </Form.Item>
-            <Form.Item label="Số điện thoại" name="phoneNumber">
-              <Input />
-            </Form.Item>
-            <Form.Item label="Họ" name="firstName">
-              <Input />
-            </Form.Item>
-          </Col>
-        </Row>
+            </Form.Item> */}
+        <Form.Item label="Họ" name="firstName" style={{ width: "20%" }}>
+          <Input />
+        </Form.Item>
+        <Form.Item label="Số điện thoại" name="phone" style={{ width: "20%" }}>
+          <Input />
+        </Form.Item>
+
         {/* Trường ẩn để giữ URL avatar, nếu cần */}
         <Form.Item name="avatar" style={{ display: "none" }}>
           <Input type="hidden" />
@@ -221,9 +257,12 @@ const Profile = () => {
           <div className="button-left">
             {/* Khi bấm "Lưu thay đổi", form sẽ gọi onFinish */}
             <Button
-              
               htmlType="submit"
-              style={{ marginRight: 10 ,backgroundColor:"#000",color:"#fff" }}
+              style={{
+                marginRight: 10,
+                backgroundColor: "#000",
+                color: "#fff",
+              }}
             >
               Lưu thay đổi
             </Button>

@@ -32,6 +32,8 @@ import {
 } from "@ant-design/icons";
 import "./index.scss";
 import InstructorInfo from "../../components/InstructorInfo";
+import { jwtDecode } from "jwt-decode";
+import api from "../../config/api";
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -62,11 +64,11 @@ const MarketingPage = () => {
   // Temporary mock data for testing
   useEffect(() => {
     // Mock workshops data
-    setWorkshops([
-      { id: 1, title: "Workshop 1: Digital Marketing Basics" },
-      { id: 2, title: "Workshop 2: Social Media Marketing" },
-      { id: 3, title: "Workshop 3: Content Creation" },
-    ]);
+    // setWorkshops([
+    //   { id: 1, title: "Workshop 1: Digital Marketing Basics" },
+    //   { id: 2, title: "Workshop 2: Social Media Marketing" },
+    //   { id: 3, title: "Workshop 3: Content Creation" },
+    // ]);
 
     // Mock campaigns data
     setCampaigns([
@@ -127,17 +129,21 @@ const MarketingPage = () => {
       const data = await response.json();
       setCampaigns(data);
     } catch (err) {
+      console.log(err);
       message.error("Failed to fetch campaigns");
     } finally {
       setLoading(false);
     }
   };
-
+  const token = localStorage.getItem("token");
+  const decodedToken = jwtDecode(token);
+  const instructorId = decodedToken.id;
   const fetchWorkshops = async () => {
     try {
-      const response = await fetch("/api/instructor/workshops");
-      const data = await response.json();
-      setWorkshops(data);
+      console.log(instructorId + "123");
+      const response = await api.get(`/workshops/instructor/${instructorId}`);
+      console.log(response);
+      setWorkshops(response.data.content);
     } catch {
       message.error("Failed to fetch workshops");
     }
@@ -220,6 +226,7 @@ const MarketingPage = () => {
         message.error("Failed to create campaign");
       }
     } catch (err) {
+      console.log(err);
       message.error("An error occurred while creating the campaign");
     } finally {
       setLoading(false);
@@ -249,6 +256,7 @@ const MarketingPage = () => {
             message.error("Failed to delete campaign");
           }
         } catch (err) {
+          console.log(err);
           message.error("An error occurred while deleting the campaign");
         } finally {
           setLoading(false);
@@ -555,8 +563,8 @@ const MarketingPage = () => {
           >
             <Select placeholder="Select a workshop">
               {workshops.map((ws) => (
-                <Option key={ws.id} value={ws.id}>
-                  {ws.title}
+                <Option key={ws.workshopId} value={ws.workshopId}>
+                  {ws.workshopTitle}
                 </Option>
               ))}
             </Select>
