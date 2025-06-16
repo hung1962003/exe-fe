@@ -28,7 +28,7 @@ import ResetPassword from "./pages/ResetPassword";
 import MarketingPage from "./pages/Marketing";
 import WorkshopDetailsPage from "./pages/WorkshopDetailsPage";
 import WorkshopDetails from "./pages/WorkshopDetails";
-import LayoutProfile from "./components/layoutProfile";
+import LayoutProfile from "./components/Layout-Profile"
 
 
 function App() {
