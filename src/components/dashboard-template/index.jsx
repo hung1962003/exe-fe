@@ -7,24 +7,8 @@ import { toast } from "react-toastify";
 import { useForm } from "antd/es/form/Form";
 import { showSuccessToast } from "../../config/configToast";
 
-export type Column = {
-  title: string;
-  dataIndex: string;
-  key: string;
-  width?: number;
-  ellipsis?: boolean;
-  render?: (value: any) => any;
-};
 
-type DashboardTemplateProps = {
-  columns: Column[];
-  apiURI: string;
-  titleModal?: string;
-  formItem?: React.ReactElement;
-  titleTable: string;
-  createName?: string;
-  titleModalUpdate?: string;
-};
+
 
 const DashboardTemplate = ({
   columns,
@@ -33,7 +17,7 @@ const DashboardTemplate = ({
   formItem,
   titleTable,
   createName
-}: DashboardTemplateProps) => {
+}) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
@@ -140,7 +124,7 @@ const DashboardTemplate = ({
             ellipsis: true,
             render: col.render
               ? col.render
-              : (value: any) => {
+              : (value) => {
                 // Nếu value là object, cố gắng lấy thuộc tính 'name'
                 if (typeof value === "object" && value !== null) {
                   return (
@@ -164,7 +148,7 @@ const DashboardTemplate = ({
             key: "id",
             width: 150,
             fixed: "right",
-            render: (id: string, record) => (
+            render: (id, record) => (
               <div
                 style={{ display: "flex", gap: "20px" }}
                 className="action-buttons"
