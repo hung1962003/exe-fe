@@ -5,41 +5,30 @@ import { Link, useParams } from "react-router-dom";
 import api from "../../config/api";
 import { toast } from "react-toastify";
 import "./index.scss";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
 
 import ProductDetailInfo from "../../components/productdetailinfo";
 import QuantitySelector from "../../components/button";
 import CarouselProductWithThumb from "../../components/carousel-product";
 import CarouselProductWithLightbox from "../../components/carousel-product";
-import { formatMoneyToVND } from '../../currency/currency';
+import { formatMoneyToVND } from "../../currency/currency";
+import CardProduct from "../../components/product";
 
 const ProductDetail = () => {
   const { id } = useParams(); // Extract the order ID from the URL
-  const productDetailId = parseInt(id, 10); // Chuyển id thành số
+
   const [product, setProduct] = useState();
   const [quantity, setQuantity] = useState(1);
-  const [idCategory, setIdCategory] = useState(1);
-  const [imageProducts, setImageProducts] = useState([]);
-  const [category, setCategory] = useState();
-  const [solution, setSolution] = useState();
+
+  const [suggestedProducts, setSuggestedProducts] = useState([]);
 
   const handleQuantityChange = (newValue) => {
     setQuantity(newValue);
     console.log("Số lượng:", newValue);
   };
-
-  // const fetchImageProducts = async () => {
-  //   try {
-  //     //  const response = await api.get(`Images/getImagesByProductId/${id}`);
-  //     const response = await api.get(`Images/getImagesByProductId/${id}`);
-  //     console.log(response.data);
-  //     setImageProducts(response.data);
-  //   } catch (error) {
-  //     console.error("Error fetching images:", error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   fetchImageProducts();
-  // }, [id]);
 
   const fetchProductDetail = async () => {
     try {
@@ -60,7 +49,7 @@ const ProductDetail = () => {
 
   // const fetchDataCategory = async () => {
   //   try {
-  //     const responseCategory = await api.get(`categories/${idCategory}`);
+  //     const responseCategory = await api.get(`category/${idCategory}`);
   //     setCategory(responseCategory.data);
   //     const responseSolution = await api.get(
   //       `Solutions/${responseCategory.data.solutionId}`
@@ -75,19 +64,41 @@ const ProductDetail = () => {
   //   fetchDataCategory();
   // }, []);
 
-  // if (!product || !category || !solution) {
+  // if (!product || !category ) {
   //   return <p>Loading...</p>;
   // }
 
   // Gọi hàm fetchDataCategory ngay khi component mount
 
-  const imageList = imageProducts.map((item) => item.imageUrl);
   //console.log("imageList", imageList);
+
+  useEffect(() => {
+    // Gọi API lấy sản phẩm gợi ý (ví dụ: random 4 sản phẩm)
+    const fetchSuggested = async () => {
+      try {
+        const res = await api.get("/products?page=0&size=4");
+        setSuggestedProducts(res.data.data.content);
+      } catch (err) {
+        // Xử lý lỗi nếu cần
+        console.log(err);
+      }
+    };
+    fetchSuggested();
+  }, []);
+
   if (!product) {
     return <p>Đang tải thông tin sản phẩm...</p>;
   }
+
   return (
-    <div style={{ padding: 40, marginLeft: "10vw", marginRight: "10vw" ,backgroundColor: "#fdf6ee"}}>
+    <div
+      style={{
+        padding: 40,
+        marginLeft: "10vw",
+        marginRight: "10vw",
+        backgroundColor: "#fdf6ee",
+      }}
+    >
       {/* <Breadcrumb
         style={{ paddingLeft: "10%", marginBottom: "2vh", fontSize: "1rem" }}
         items={[
@@ -96,9 +107,6 @@ const ProductDetail = () => {
           },
           {
             title: <Link to="">{category?.name}</Link>,
-          },
-          {
-            title: <Link to="">{solution?.name}</Link>,
           },
         ]}
       /> */}
@@ -110,7 +118,7 @@ const ProductDetail = () => {
         <Col span={8}>
           {/* <CarouselProduct numberOfSlide={1} id={productDetailId} />
           <CarouselProduct numberOfSlide={4} id={productDetailId} /> */}
-          {/* <CarouselProductWithLightbox images={imageList} /> */}
+          <CarouselProductWithLightbox images={product.images} />
         </Col>
         <Col span={16}>
           <Card
@@ -146,48 +154,7 @@ const ProductDetail = () => {
               }}
             >
               Giá: {formatMoneyToVND(product.price)}
-              {/* <span style={{ fontWeight: "400", fontSize: "1.5rem" }}>
-                {" "}
-                / {product.unit.name}
-              </span> */}
             </p>
-            {/* <div className="productdetail-info">
-              <p className="productdetail-info__title">Thương Hiệu </p>
-              <p className="productdetail-info__name">{product.brand.name}</p>
-            </div>
-            <div className="productdetail-info">
-              <p className="productdetail-info__title">Xuất xứ thương hiệu </p>
-              <p className="productdetail-info__name">
-                {product.brandOrigin.name}
-              </p>
-            </div>
-            <div className="productdetail-info">
-              <p className="productdetail-info__title">Nước sản xuất</p>{" "}
-              <p className="productdetail-info__name">
-                {product.manufacturedCountry.name}
-              </p>
-            </div>
-
-            <div className="productdetail-info">
-              <p className="productdetail-info__title">Nhà sản xuất</p>
-              <p className="productdetail-info__name">
-                {product.manufacturer.name}
-              </p>
-            </div>
-
-            <div className="productdetail-info">
-              <p className="productdetail-info__title">Quy cách</p>{" "}
-              <p className="productdetail-info__name">
-                {product.packaging.name}
-              </p>
-            </div>
-
-            <div className="productdetail-info">
-              <p className="productdetail-info__title">Danh mục</p>
-              <Link to={`/product`} className="productdetail-info__name">
-                {product.category.name}
-              </Link>
-            </div> */}
 
             <div
               className="productdetail-info"
@@ -201,11 +168,6 @@ const ProductDetail = () => {
                 {product.description}
               </p>
             </div>
-
-            {/* <div className="productdetail-info">
-              <p className="productdetail-info__title">Dạng</p>
-              <p className="productdetail-info__name">{product.unit.name}</p>
-            </div> */}
 
             <div style={{ marginBottom: 20 }}>
               <QuantitySelector
@@ -226,15 +188,35 @@ const ProductDetail = () => {
           </Card>
         </Col>
       </Row>
-      {/* <ProductDetailInfo
-        productDescription={product.productDetail?.productDescription || ""}
-        ingredient={product.productDetail?.ingredient || ""}
-        effect={product.productDetail?.effect || ""}
-        howToUse={product.productDetail?.howToUse || ""}
-        sideEffect={product.productDetail?.sideEffect || ""}
-        note={product.productDetail?.note || ""}
-        preserve={product.productDetail?.preserve || ""}
-      /> */}
+
+      {/* Phần bạn có thể thích */}
+      <div className="suggested-products-section">
+        <h3>Bạn có thể thích</h3>
+        <Swiper
+          modules={[Navigation, Pagination]}
+          spaceBetween={16}
+          slidesPerView={4}
+          navigation
+          autoplay={true}
+          // pagination={{ clickable: true }}
+          loop={true}
+          breakpoints={{
+            1024: { slidesPerView: 4 },
+            768: { slidesPerView: 3 },
+            480: { slidesPerView: 2 },
+            0: { slidesPerView: 1 },
+          }}
+        >
+          {suggestedProducts.map((product) => (
+            <SwiperSlide key={product.productId}>
+              <CardProduct
+                product={product}
+                imageUrl={product.images?.[0]?.imageUrl}
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
     </div>
   );
 };

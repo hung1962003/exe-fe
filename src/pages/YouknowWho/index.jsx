@@ -18,12 +18,6 @@ function YouknowWho() {
   };
   const handleSelectRole = async (role) => {
     try {
-      // Gọi API để set vai trò
-      await api.put("/auth/set-role", {
-        email,
-        role,
-      });
-
       // Sau khi cập nhật role xong, login lại
       const response = await api.post("/auth/login", { email, password });
 
@@ -33,12 +27,16 @@ function YouknowWho() {
       localStorage.setItem("role", decoded.role);
       dispatch(login(user));
       toast.success("Đăng nhập thành công!");
-
+      // Gọi API để set vai trò
+      await api.put("/admin/users/role", {
+        email,
+        role,
+      });
       // Điều hướng dựa vào vai trò
-      if (decoded.role === "Instructor") {
-        navigate("/instructor");
+      if (decoded.role === "INSTRUCTOR") {
+        navigate("/activateWorkshopOwner");
       } else {
-        navigate("/");
+        navigate("/Services");
       }
     } catch (err) {
       console.log(err);
@@ -52,10 +50,16 @@ function YouknowWho() {
         <div className="youknowwho-left">
           <h2>Bạn Là Ai ????</h2>
           <div className="youknowwho-button-wrapper">
-            <button className="youknowwho-button">
+            <button
+              className="youknowwho-button"
+              onClick={() => handleSelectRole("USER")}
+            >
               Người tham gia workshop
             </button>
-            <button className="youknowwho-button">
+            <button
+              className="youknowwho-button"
+              onClick={() => handleSelectRole("INSTRUCTOR")}
+            >
               Người tổ chức workshop
             </button>
           </div>

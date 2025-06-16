@@ -1,73 +1,75 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./index.scss";
 import CarouselForYou from "../../components/SliderMain";
-import { Typography } from "antd";
-import { formatMoneyToVND } from "../../currency/currency";
+import { Typography, Spin } from "antd";
+import { formatMoneyToVND, formatTimeRange } from "../../currency/currency";
 import api from "../../config/api";
 import { useParams } from "react-router";
 
-
 const WorkshopDetails = () => {
   const { Text } = Typography;
-  const { hasMoreDate, isHasMoreDate } = useState();
+  const [data1, setData1] = useState([]);
+  const [isDataUpcoming, setIsDataUpcoming] = useState([]);
+  const [loading, setLoading] = useState(true);
   const ticketInfoRef = useRef(null);
-  const {id} = useParams();
-  const data = {
-    title: "Náo Loạn Tiếu Lâm Đường",
-    intro:
-      "Náo Loạn Tiếu Lâm Đường là một chương trình hài kịch mới, quy tụ nhiều nghệ sĩ trẻ tài năng.",
-    description: `
-      Tác giả: Nguyễn Bảo Ngọc. 
-      Biên tập & Đạo diễn: Hồng Ngọc. 
-      Diễn viên: Tuấn Kiệt, Võ Đăng Khoa, Long Chun, Mai Bảo Vinh, 5 Chà, Vương Chí Nam, Tú Tri, Mai Kim Liên, 
-      Huỳnh Thi, Thắng Tăng, Nhã Uyên, Huyền Duy, Duy Tiến và các Diễn viên trẻ Nhà Hát Thanh Niên.
-    `,
-  };
-  const matchData = {
-    title: "Trận Đấu Giao Hữu: The Manchester Reds - VietNam All Stars",
-    match: "The Manchester Reds - VietNam All Stars",
-    date: " 26 Tháng 06, 2025",
-    timeStart: "16:00",
-    timeEnd: "20:00",
-    moreDates: "2",
-    location: "Sân Vận Động Hòa Xuân, Đà Nẵng",
-    priceFrom: "250000 ",
-  };
+  const { id } = useParams();
+
   const organizerData = {
     logo: "https://imgur.com/gallery/awoo-ufCuXWC",
     name: "Công Ty TNHH Sân Khấu - Nghệ Thuật Thái Dương",
     description: "Nhà Hát Thanh Niên",
   };
 
-  const handleHasMoreDate = () => {
-    if (data.moreDates > 1) {
-      isHasMoreDate(data.moreDates - 1);
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      const [workshopResponse, upcomingResponse] = await Promise.all([
+        api.get(`/workshops/${id}`),
+        api.get("/workshops/upcoming?page=0&size=10"),
+      ]);
+
+      setData1(workshopResponse.data);
+      setIsDataUpcoming(upcomingResponse.data.content);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleUserAccess = async () => {
-    try {
-      const response = await api.post("workshop/user-access",{id});
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   useEffect(() => {
-    handleUserAccess();
-  }, []);
+    fetchAllData();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="workshop-page">
       {/* Banner vé */}
       <section className="ticket-banner">
         <div className="ticket-banner__info">
-          <h2>{matchData.title} </h2>
+          <h2>{data1.workshopTitle} </h2>
           <div className="ticket-banner__meta">
             <div>
               <i className="fa-regular fa-calendar"></i>
-              16:00 - 20:00, 26 Tháng 06, 2025
+              {data1.schedules && data1.schedules.length > 0
+                ? formatTimeRange(data1.schedules[0].startTime)
+                : "Đang cập nhật"}
             </div>
-            {Number(matchData.moreDates) > 0 && (
+            {data1.schedules && data1.schedules.length > 0 && (
               <div
                 className="ticket-banner__more-date"
                 style={{ cursor: "pointer" }}
@@ -75,25 +77,29 @@ const WorkshopDetails = () => {
                   ticketInfoRef.current?.scrollIntoView({ behavior: "smooth" });
                 }}
               >
-                + {matchData.moreDates} ngày khác
+                + {data1.schedules.length} ngày khác
               </div>
             )}
 
             <div>
               <i className="fa-solid fa-location-dot"></i>
-              {matchData.location}
+              {data1.address}
             </div>
           </div>
           <div className="ticket-banner__price">
-            Giá từ <span>{formatMoneyToVND(matchData.priceFrom)}</span>
+            Giá từ <span>{formatMoneyToVND(data1.price)}</span>
           </div>
-          <button className="btn-main">Chọn lịch diễn</button>
+          <button
+            className="btn-main"
+            onClick={() => {
+              ticketInfoRef.current?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            Chọn lịch diễn
+          </button>
         </div>
         <div className="ticket-banner__img">
-          <img
-            src="https://i.imgur.com/1Q9Z1Zm.png"
-            alt="Manchester Reds vs Vietnam All Stars"
-          />
+          <img src={data1.urlImage} alt={data1.workshopTitle} />
         </div>
       </section>
 
@@ -103,11 +109,10 @@ const WorkshopDetails = () => {
         <div className="workshop-card intro">
           <h3>Giới thiệu</h3>
           <div className="intro-content">
-            <h2>{data.title}</h2>
+            <h2>{data1.workshopTitle}</h2>
             <div className="intro-content__description">
               <Text style={{ whiteSpace: "pre-line" }}>
-                {data.description?.replace(/\\n/g, "\n")}{" "}
-                {/*\\n (dạng escape), .replace(/\\n/g, "\n") để chuyển nó thành xuống dòng thật. */}
+                {data1.description?.replace(/\\n/g, "\n")}
               </Text>
             </div>
           </div>
@@ -116,13 +121,18 @@ const WorkshopDetails = () => {
         {/* Thông tin vé */}
         <div className="workshop-card ticket-info" ref={ticketInfoRef}>
           <div className="ticket-info__header">Thông tin vé</div>
-          <div className="ticket-info__body">
-            <span>
-              <i className="fa-regular fa-angle-right"></i>
-              <b>20:00 - 22:00, 19 Tháng 07, 2025</b>
-            </span>
-            <button className="btn-main">Mua vé ngay</button>
-          </div>
+
+          {data1.schedules &&
+            data1.schedules.length > 0 &&
+            data1.schedules.map((item, idx) => (
+              <div className="ticket-info__body" key={item.startTime || idx}>
+                <span>
+                  <i className="fa-regular fa-angle-right"></i>
+                  <b>{formatTimeRange(item.startTime)}</b>
+                </span>
+                <button className="btn-main">Mua vé ngay</button>
+              </div>
+            ))}
         </div>
 
         {/* Ban tổ chức */}
@@ -149,7 +159,7 @@ const WorkshopDetails = () => {
       {/* Gợi ý */}
       <section className="workshop-footer">
         <div className="workshop-footer__title">Có thể bạn cũng thích</div>
-        <CarouselForYou title="" />
+        <CarouselForYou data={isDataUpcoming} />
       </section>
     </div>
   );

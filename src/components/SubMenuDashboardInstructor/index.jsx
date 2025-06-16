@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./index.scss";
 import { Select } from "antd";
+import OverviewDashboard from "../OverviewDashboard";
+import api from "../../config/api";
+import { jwtDecode } from "jwt-decode";
+import MarketingDashboard from "../MarketingDashboard";
 
 const workshops = [
   {
@@ -58,10 +62,21 @@ const participants = [
   },
 ];
 const tabs = ["Overview", "Workshops", "Người tham gia", "Phân tích"];
+const decode = jwtDecode(localStorage.getItem("token"));
+const id = decode.id;
 
 function SubMenuDashboardInstructor() {
   const [activeTab, setActiveTab] = useState(0);
+  const [workshops, setWorkshops] = useState([]);
 
+  const dataWorkshop = async () => {
+    const res = await api.get(`/workshops/instructor/${id}`);
+    setWorkshops(res.data.content);
+    return res.data;
+  };
+  useEffect(() => {
+    dataWorkshop();
+  }, []);
   return (
     <div className="submenu-instructor-wrapper">
       <div className="submenu-tabs">
@@ -77,53 +92,38 @@ function SubMenuDashboardInstructor() {
       </div>
       <div className="submenu-content">
         {activeTab === 0 && (
-          <div className="workshop-list">
-            {workshops.map((ws, idx) => (
-              <div className="workshop-card" key={idx}>
-                <img className="workshop-img" src={ws.img} alt={ws.title} />
-                <div className="workshop-info">
-                  <div className="workshop-title">{ws.title}</div>
-                  <div className="workshop-author">Bởi {ws.author}</div>
-                  <div className="workshop-desc">{ws.desc}</div>
-                  <div className="workshop-tags">
-                    {ws.tags.map((tag, i) => (
-                      <span className="workshop-tag" key={i}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="workshop-owner">
-                    <span className="owner-dot"></span>
-                    <span className="owner-name">{ws.author}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="overview-dashboard-wrapper">
+            <OverviewDashboard />
           </div>
         )}
         {activeTab === 1 && (
           <div className="workshop-list">
-            {workshops.map((ws, idx) => (
-              <div className="workshop-card" key={idx}>
-                <img className="workshop-img" src={ws.img} alt={ws.title} />
-                <div className="workshop-info">
-                  <div className="workshop-title">{ws.title}</div>
-                  <div className="workshop-author">Bởi {ws.author}</div>
-                  <div className="workshop-desc">{ws.desc}</div>
-                  <div className="workshop-tags">
-                    {ws.tags.map((tag, i) => (
-                      <span className="workshop-tag" key={i}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="workshop-owner">
-                    <span className="owner-dot"></span>
-                    <span className="owner-name">{ws.author}</span>
+            {Array.isArray(workshops) &&
+              workshops.map((ws, idx) => (
+                <div className="workshop-card" key={idx}>
+                  <img
+                    className="workshop-img"
+                    src={ws.description}
+                    alt={ws.title}
+                  />
+                  <div className="workshop-info">
+                    <div className="workshop-title">{ws.workshopTitle}</div>
+                    <div className="workshop-author">Bởi {ws.createBy}</div>
+                    <div className="workshop-desc">{ws.description}</div>
+                    {/* <div className="workshop-tags">
+                      {ws.tags.map((tag, i) => (
+                        <span className="workshop-tag" key={i}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div> */}
+                    <div className="workshop-owner">
+                      <span className="owner-dot"></span>
+                      <span className="owner-name">{ws.author}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         )}
         {activeTab === 2 && (
@@ -180,7 +180,7 @@ function SubMenuDashboardInstructor() {
             </table>
           </div>
         )}
-        {/* Các tab khác có thể thêm nội dung tương tự */}
+        {activeTab === 3 && <MarketingDashboard />}
       </div>
     </div>
   );

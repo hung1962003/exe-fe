@@ -1,51 +1,44 @@
 import { useEffect, useState } from "react";
 import "./index.scss";
 import api from "../../config/api";
-import { Flex, Spin, Button, Row, Col } from "antd";
+import { Flex, Spin, Button, Row, Col, notification } from "antd";
 import { toast } from "react-toastify";
 import { RightOutlined } from "@ant-design/icons";
 
 import CardProduct from "../../components/product";
 import { formatMoneyToVND } from "../../currency/currency";
 import { useNavigate } from "react-router";
+import { showSuccessToast } from "../../config/configToast";
+import { useDispatch, useSelector } from "react-redux";
+import { addProductToCart } from "../../redux/features/cartSlice";
 
 const ShoppingPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState({});
   const [pageNumber, setPageNumber] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [filterPrice, setFilterPrice] = useState(0);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
       let response;
 
-      // Apply filter conditionally
       if (filterPrice === 100000) {
-        response = await api.get(
-          `Products/price-under-100000?pageNumber=${pageNumber}&pageSize=10`
-        );
+        response = await api.get(`products/?page=${pageNumber}&size=10`);
       } else if (filterPrice === 200000) {
-        response = await api.get(
-          `Products/price-over-200000?pageNumber=${pageNumber}&pageSize=10`
-        );
+        response = await api.get(`products/?page=${pageNumber}&size=10`);
       } else if (filterPrice === 400000) {
-        response = await api.get(
-          `Products/price-over-400000?pageNumber=${pageNumber}&pageSize=10`
-        );
+        response = await api.get(`products/?page=${pageNumber}&size=10`);
       } else if (filterPrice === 500000) {
-        response = await api.get(
-          `Products/price-over-500000?pageNumber=${pageNumber}&pageSize=10`
-        );
+        response = await api.get(`products/?page=${pageNumber}&size=10`);
       } else {
-        // response = await api.get(`Products?pageNumber=${pageNumber}&pageSize=3`);
         response = await api.get(`products?page=${pageNumber}&size=10`, {
-          timeout: 10000, // Tăng timeout lên 10 giây
+          timeout: 10000,
         });
-        console.log(response);
       }
 
       if (
@@ -54,8 +47,9 @@ const ShoppingPage = () => {
       ) {
         setHasMore(false);
       } else {
-        setProducts((prev) => [...prev, ...response.data.data.content]); // vì data là mảng
-        console.log(products);
+        setProducts((prev) => [...prev, ...response.data.data.content]);
+        setHasMore(!response.data.data.last);
+        console.log(response.data.data.content);
       }
     } catch (error) {
       toast.error("Lỗi khi lấy danh sách sản phẩm!");
@@ -67,35 +61,40 @@ const ShoppingPage = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [pageNumber, filterPrice]); // Call API when pageNumber or filterPrice changes
-
-  // useEffect(() => {
-  //   const fetchImages = async () => {
-  //     try {
-  //       const response = await api.get("Images");
-  //       const imagesMap = {};
-  //       response.data.items.forEach((item) => {
-  //         if (!imagesMap[item.productId]) {
-  //           imagesMap[item.productId] = item.imageUrl;
-  //         }
-  //       });
-  //       setImages(imagesMap);
-  //     } catch (error) {
-  //       toast.error("Lỗi khi lấy hình ảnh sản phẩm!");
-  //     }
-  //   };
-  //   fetchImages();
-  // }, []);
-
+  }, [pageNumber, filterPrice]);
+  const handleAddToCart = async (product) => {
+    if (user?.token) {
+      try {
+        const response = await api.post("CartProducts", {
+          quantity: 1,
+          productId: product.id,
+        });
+        showSuccessToast("Thêm vào giỏ hàng thành công!");
+        dispatch(addProductToCart(response.data));
+      } catch (error) {
+        console.log(error); 
+        notification.error({
+          message: "Thêm vào giỏ hàng thất bại",
+        });
+      }
+    } else {
+      notification.error({
+        message: "Bạn chưa đăng nhập",
+        description: "Hãy đăng nhập để tiếp tục mua hàng!",
+      });
+    }
+  };
   const handleFilterChange = (price) => {
-    setFilterPrice((prev) => (prev === price ? 0 : price)); // Toggle filter
-    setProducts([]); // Reset products when filter changes
+    setFilterPrice((prev) => (prev === price ? 0 : price));
+    setProducts([]);
     setPageNumber(0);
     setHasMore(true);
   };
+
   const handleNavigateProductDetail = (id) => {
     navigate("/product/" + id);
   };
+
   return (
     <div className="shopping-page-container">
       <Row gutter={24}>
@@ -120,7 +119,6 @@ const ShoppingPage = () => {
           >
             Trên {formatMoneyToVND(200000)}
           </Button>
-
           <Button
             onClick={() => handleFilterChange(400000)}
             className={`shopping-price-filter ${
@@ -137,17 +135,9 @@ const ShoppingPage = () => {
           >
             Trên {formatMoneyToVND(500000)}
           </Button>
-
-          {/* <Button
-            onClick={() => handleFilterChange(0)}
-            className={`shopping-price-filter ${filterPrice === 0 ? "active" : ""}`}
-          >
-            Bỏ lọc
-          </Button> */}
         </Col>
         <Col span={16} className="shopping-product-section">
           <h2>Sản phẩm của chúng tôi</h2>
-
           {loading && products.length === 0 ? (
             <Flex
               justify="center"
@@ -165,9 +155,9 @@ const ShoppingPage = () => {
             <>
               <Row gutter={[16, 16]}>
                 {products.map((product) => (
-                  <Col span={8} key={product.id}>
+                  <Col span={8} key={product.productId}>
                     <CardProduct
-                      imageUrl={images[product.id]}
+                      imageUrl={product.images?.[0]?.imageUrl}
                       product={product}
                     />
                   </Col>

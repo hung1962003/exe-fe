@@ -26,11 +26,15 @@ import {
 import api from "../../config/api";
 import { DatePicker } from "antd";
 import dayjs from "dayjs"; // dùng để xử lý thời gian
-
+import { showSuccessToast } from "./../../config/configToast";
+import { toast } from "react-toastify";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+dayjs.extend(isSameOrBefore);
 const { Option } = Select;
 
 const WorkshopPost = ({ onClose }) => {
   const [fileList, setFileList] = useState([]);
+  const [urlImage, setUrlImage] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [videoFile, setVideoFile] = useState(null);
@@ -61,6 +65,7 @@ const WorkshopPost = ({ onClose }) => {
   // Xử lý upload ảnh lên Cloudinary
   const handleFileUpload = async ({ file }) => {
     const imageUrl = await uploadImageToCloudinary(file);
+    setUrlImage(imageUrl);
     if (imageUrl) {
       message.success("Upload ảnh thành công!");
       setFileList([{ uid: "-1", name: file.name, url: imageUrl }]);
@@ -124,11 +129,24 @@ const WorkshopPost = ({ onClose }) => {
   };
 
   // Hàm submit form
-  const handleFinish = async () => {
+  const handleFinish = async (values) => {
     // Gọi upload video trước (nếu có)
     //await handleVideoUpload();
     // Sau đó xử lý các giá trị form khác
     // ...
+    try {
+      const payload = {
+        ...values,
+        price: Number(values.price), // Chuyển sang number
+        urlImage: urlImage, // Lấy URL ảnh từ fileList
+      };
+      const response = await api.post("/workshops", payload);
+      console.log(response);
+      showSuccessToast("Tạo workshop thành công");
+    } catch (error) {
+      console.log(error);
+      toast.error("Tạo workshop thất bại");
+    }
     setIsModalOpen(false);
     form.resetFields();
     setFileList([]);
@@ -171,7 +189,7 @@ const WorkshopPost = ({ onClose }) => {
       open={isModalOpen}
       onCancel={handleCancel}
       footer={null}
-      width={800}
+      width={1000}
     >
       <Form
         layout="vertical"
@@ -179,13 +197,13 @@ const WorkshopPost = ({ onClose }) => {
         onFinish={handleFinish}
         form={form}
         labelCol={{ span: 10 }}
-        style={{ maxWidth: 700 }}
+        style={{ width: 900 }}
       >
         <Row gutter={24}>
           <Col xs={24} md={10}>
             <Form.Item
               label="Thêm Hình Ảnh"
-              name="image"
+              name="urlImage"
               valuePropName="fileList"
               getValueFromEvent={(e) =>
                 Array.isArray(e) ? e : e && e.fileList
@@ -243,16 +261,24 @@ const WorkshopPost = ({ onClose }) => {
                 rows={4}
               />
             </Form.Item>
+            <Form.Item label="Dia chi" name="address">
+              <Input />
+            </Form.Item>
           </Col>
           <Col xs={24} md={14}>
-            <Form.Item label="Tên Workshop" name="name">
+            <Form.Item label="Tên Workshop" name="workshopTitle">
               <Input placeholder="VD: Làm Gốm" />
             </Form.Item>
             <Form.Item label="Doanh mục" name="category">
               <Select placeholder="VD: Nghệ thuật và sáng tạo">
-                <Option value="art">Nghệ thuật và sáng tạo</Option>
-                <Option value="cooking">Ẩm thực</Option>
-                <Option value="photography">Nhiếp ảnh</Option>
+                <Option value="ART">Nghệ thuật và sáng tạo</Option>
+                <Option value="BUSINESS">Kinh doanh</Option>
+                <Option value="COOKING">Ẩm thực</Option>
+                <Option value="MUSIC">Âm nhạc</Option>
+                <Option value="PHOTOGRAPHY">Nhiếp ảnh</Option>
+                <Option value="TECHNOLOGY">Công nghệ</Option>
+                <Option value="OTHER">Khác</Option>
+                <Option value="WORKSHOP">Hội thảo</Option>
               </Select>
             </Form.Item>
             <Form.Item label="Giá tiền cho vé " name="price">
@@ -272,7 +298,7 @@ const WorkshopPost = ({ onClose }) => {
                         borderRadius: 8,
                       }}
                     >
-                      <Row gutter={16}>
+                      {/* <Row gutter={16}>
                         <Col span={12}>
                           <Form.Item
                             {...restField}
@@ -297,7 +323,7 @@ const WorkshopPost = ({ onClose }) => {
                             <Input placeholder="VD: Học cách tạo hình sản phẩm" />
                           </Form.Item>
                         </Col>
-                      </Row>
+                      </Row> */}
                       <Row gutter={16}>
                         <Col span={12}>
                           <Form.Item
@@ -309,6 +335,20 @@ const WorkshopPost = ({ onClose }) => {
                                 required: true,
                                 message: "Chọn thời gian bắt đầu!",
                               },
+                              // Rule: startTime phải ở tương lai
+                              ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                  if (!value) return Promise.resolve();
+                                  if (value.isBefore(dayjs())) {
+                                    return Promise.reject(
+                                      new Error(
+                                        "Schedule start time must be in the future"
+                                      )
+                                    );
+                                  }
+                                  return Promise.resolve();
+                                },
+                              }),
                             ]}
                           >
                             <DatePicker
@@ -328,6 +368,41 @@ const WorkshopPost = ({ onClose }) => {
                                 required: true,
                                 message: "Chọn thời gian kết thúc!",
                               },
+                              // Rule: endTime phải sau startTime
+                              ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                  const startTime = getFieldValue([
+                                    "schedules",
+                                    name,
+                                    "startTime",
+                                  ]);
+
+                                  // Nếu chưa chọn đủ thì bỏ qua
+                                  if (!value || !startTime)
+                                    return Promise.resolve();
+
+                                  // Nếu đã là dayjs thì giữ nguyên, nếu là string thì chuyển về dayjs
+                                  const end = dayjs.isDayjs(value)
+                                    ? value
+                                    : dayjs(value);
+                                  const start = dayjs.isDayjs(startTime)
+                                    ? startTime
+                                    : dayjs(startTime);
+
+                                  if (!end.isValid() || !start.isValid())
+                                    return Promise.resolve();
+
+                                  if (end.isSameOrBefore(start)) {
+                                    return Promise.reject(
+                                      new Error(
+                                        "Schedule end time must be after start time"
+                                      )
+                                    );
+                                  }
+
+                                  return Promise.resolve();
+                                },
+                              }),
                             ]}
                           >
                             <DatePicker
@@ -347,6 +422,7 @@ const WorkshopPost = ({ onClose }) => {
                     <Button
                       type="dashed"
                       onClick={() => add()}
+                      htmlType="submit"
                       block
                       icon={<PlusOutlined />}
                     >

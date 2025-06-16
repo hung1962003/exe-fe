@@ -1,14 +1,18 @@
 .overview-dashboard {
   background: #111214;
-  min-height: 100vh;
+  min-height: unset;
   color: #fff;
-  padding: 24px;
-
+  padding: 12px 0;
+  max-width: 55vw;
+  width: 100%;
+  margin: 0 auto 24px auto;
+  padding: 0 12px 0 12px;
   &__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
   }
 
   &__date {
@@ -20,10 +24,10 @@
 
   &__switch-btn {
     background: none;
-    border: 1px solid #1abc60;
+    border: 2px solid #1abc60;
     color: #1abc60;
     border-radius: 6px;
-    padding: 6px 18px;
+    padding: 8px 24px;
     font-size: 1rem;
     cursor: pointer;
     transition: background 0.2s;
@@ -34,40 +38,40 @@
   }
 
   &__title {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: bold;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
 
   &__overview {
     display: flex;
-    gap: 24px;
-    margin-bottom: 24px;
+    gap: 20px;
+    margin-bottom: 16px;
   }
 
   &__card {
     background: #23272a;
-    border-radius: 10px;
-    padding: 24px 32px;
+    border-radius: 12px;
+    padding: 16px 24px;
     flex: 1;
     display: flex;
     flex-direction: column;
     position: relative;
-    min-width: 320px;
-    min-height: 140px;
+    min-width: 280px;
+    min-height: 100px;
     justify-content: space-between;
   }
 
   &__card-title {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 500;
     margin-bottom: 8px;
   }
 
   &__card-value {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: bold;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
 
   &__card-desc {
@@ -78,10 +82,10 @@
 
   &__progress {
     position: absolute;
-    right: 24px;
-    top: 24px;
-    width: 70px;
-    height: 70px;
+    right: 16px;
+    top: 16px;
+    width: 60px;
+    height: 60px;
     background: transparent;
   }
 
@@ -93,8 +97,8 @@
   &__chart-header {
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
-    font-size: 1rem;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
     font-weight: 500;
   }
 
@@ -122,9 +126,9 @@
     background: #23272a;
     color: #fff;
     border: none;
-    border-radius: 16px;
-    padding: 4px 18px;
-    font-size: 1rem;
+    border-radius: 12px;
+    padding: 6px 20px;
+    font-size: 0.9rem;
     cursor: pointer;
     &.active {
       background: #1abc60;
@@ -134,10 +138,12 @@
   }
 
   &__chart {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
     background: linear-gradient(120deg, #1a1a2e 0%, #23272a 100%);
     border-radius: 12px;
-    padding: 24px;
-    min-height: 320px;
+    padding: 12px;
   }
 
   &__detail {
@@ -145,7 +151,7 @@
   }
 
   &__detail-title {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: bold;
     margin-bottom: 8px;
   }
@@ -158,9 +164,10 @@
 
   &__table {
     background: #23272a;
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 0;
     overflow-x: auto;
+    min-height: 120px;
   }
 
   &__table-row {
@@ -177,6 +184,33 @@
     > div {
       flex: 1;
       text-align: center;
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .overview-dashboard {
+    padding: 12px 0;
+    &__overview {
+      flex-direction: column;
+      gap: 16px;
+    }
+    &__card {
+      min-width: 0;
+      padding: 16px 12px;
+    }
+    &__progress {
+      right: 12px;
+      top: 12px;
+      width: 50px;
+      height: 50px;
+    }
+    &__chart {
+      padding: 12px;
+      min-height: 180px;
+    }
+    &__table {
+      max-height: 200px;
     }
   }
 }

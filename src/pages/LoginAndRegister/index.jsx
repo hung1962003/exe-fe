@@ -31,13 +31,13 @@ const LoginAndRegister = () => {
         showSuccessToast("Login success");
         console.log(user);
         switch (userRole) {
-          case "Instructor":
-            navigate("/instructor");
+          case "INSTRUCTOR":
+            navigate("/dashboardInstructor");
             break;
           case "Manager":
             navigate("/manager");
             break;
-          case "Administrator":
+          case "ADMIN":
             navigate("/dashboard");
             break;
           default:

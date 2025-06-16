@@ -1,8 +1,10 @@
 import React from "react";
 import { Button } from "antd";
 import "./index.scss";
+import { useNavigate } from "react-router";
 
 const Services = () => {
+  const navigate = useNavigate();
   const services = [
     {
       title: "Standard Service",
@@ -50,8 +52,12 @@ const Services = () => {
           </div>
         ))}
       </div>
-      <div className="pagination">
-        <button className="next-button">Tiếp</button>
+      <div
+        className="pagination"
+        style={{ cursor: "pointer" }}
+        onClick={() => navigate("/")}
+      >
+        <button  className="next-button">Tiếp</button>
       </div>
     </div>
   );

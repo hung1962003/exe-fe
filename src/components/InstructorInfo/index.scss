@@ -46,7 +46,7 @@
     margin-bottom: 4px;
     font-weight: 500;
     white-space: nowrap;
-    width: fit-content; 
+    width: fit-content;
   }
 
   &__welcome {
@@ -78,8 +78,9 @@
     height: 44px;
     font-size: 1rem;
     transition: all 0.2s;
+    cursor: pointer;
     &:hover {
-      background: #fff ;
+      background: #fff;
       color: #6e6b65;
       border-color: #fff;
     }
@@ -95,6 +96,7 @@
     height: 44px;
     font-size: 1rem;
     transition: all 0.2s;
+    cursor: pointer;
     &:hover {
       background: #1e2e22;
       color: #ffe48a;
@@ -111,6 +113,7 @@
     height: 44px;
     font-size: 1rem;
     transition: all 0.2s;
+    cursor: pointer;
     &:hover {
       background: #fff;
       color: #444;
@@ -127,6 +130,7 @@
     height: 44px;
     font-size: 1rem;
     transition: all 0.2s;
+    cursor: pointer;
     &:hover {
       background: #a06a3a;
       color: #fff;
