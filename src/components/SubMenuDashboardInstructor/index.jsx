@@ -62,23 +62,23 @@ const participants = [
   },
 ];
 const tabs = ["Overview", "Workshops", "Người tham gia", "Phân tích"];
-const token = localStorage.getItem("token");
-let decode;
-if (typeof token === "string" && token) {
-  decode = jwtDecode(token);
-  console.log("Thông tin người dùng:", decode);
-} else {
-  console.log("Không tìm thấy token hợp lệ");
-  // có thể redirect về trang login tại đây
-}
 
-const id = decode?.id;
-
-function  SubMenuDashboardInstructor() {
+function SubMenuDashboardInstructor() {
   const [activeTab, setActiveTab] = useState(0);
   const [workshops, setWorkshops] = useState([]);
 
   const dataWorkshop = async () => {
+    const token = localStorage.getItem("token");
+    let decode;
+    if (typeof token === "string" && token) {
+      decode = jwtDecode(token);
+      console.log("Thông tin người dùng:", decode);
+    } else {
+      console.log("Không tìm thấy token hợp lệ");
+      // có thể redirect về trang login tại đây
+    }
+
+    const id = decode?.id;
     const res = await api.get(`/workshops/instructor/${id}`);
     setWorkshops(res.data.content);
     return res.data;
