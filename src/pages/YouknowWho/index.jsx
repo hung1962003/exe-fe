@@ -29,7 +29,7 @@ function YouknowWho() {
         decoded = jwtDecode(token);
         console.log("Thông tin người dùng:", decoded);
       } else {
-        console.warn("Không tìm thấy token hợp lệ");
+        console.log("Không tìm thấy token hợp lệ");
         // có thể redirect về trang login tại đây
       }
 

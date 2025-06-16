@@ -68,7 +68,7 @@ if (typeof token === "string" && token) {
   decode = jwtDecode(token);
   console.log("Thông tin người dùng:", decode);
 } else {
-  console.warn("Không tìm thấy token hợp lệ");
+  console.log("Không tìm thấy token hợp lệ");
   // có thể redirect về trang login tại đây
 }
 

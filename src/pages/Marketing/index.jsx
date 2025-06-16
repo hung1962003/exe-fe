@@ -141,13 +141,19 @@ const MarketingPage = () => {
     decodedToken = jwtDecode(token);
     console.log("Thông tin người dùng:", decodedToken);
   } else {
-    console.warn("Không tìm thấy token hợp lệ");
+    console.log("Không tìm thấy token hợp lệ");
     // có thể redirect về trang login tại đây
   }
 
-  const instructorId = decodedToken.id;
   const fetchWorkshops = async () => {
+    if (!decodedToken?.id) {
+      message.error(
+        "Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại!"
+      );
+      return;
+    }
     try {
+      const instructorId = decodedToken?.id;
       console.log(instructorId + "123");
       const response = await api.get(`/workshops/instructor/${instructorId}`);
       console.log(response);
