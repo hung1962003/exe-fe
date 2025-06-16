@@ -93,7 +93,9 @@ function Home() {
     try {
       setLoading(true);
       const [upcomingResponse] = await Promise.all([
-        api.get("/workshops/upcoming?page=0&size=10"),
+        api.get("/workshops/upcoming?page=0&size=10", {
+          timeout: 10000, // 10s
+        }),
       ]);
 
       setIsDataUpcoming(upcomingResponse.data.content);
@@ -139,7 +141,7 @@ function Home() {
           <BannerCarousel title="Sự kiện đặc biệt" data={isDataUpcoming} />{" "}
         </div>
         <div className="block">
-        <div
+          <div
             style={{
               display: "flex",
               justifyContent: "space-between",
@@ -160,7 +162,7 @@ function Home() {
               Dành cho bạn
             </span>
           </div>
-          <CarouselForYou  data={isDataUpcoming} />
+          <CarouselForYou data={isDataUpcoming} />
         </div>
         <div className="block">
           <div

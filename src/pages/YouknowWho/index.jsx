@@ -23,7 +23,8 @@ function YouknowWho() {
 
       const user = response.data;
       localStorage.setItem("token", user.token);
-      const decoded = jwtDecode(user.token);
+      const decoded = jwtDecode(localStorage.getItem("token"));
+      
       localStorage.setItem("role", decoded.role);
       dispatch(login(user));
       toast.success("Đăng nhập thành công!");

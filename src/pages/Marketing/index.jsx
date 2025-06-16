@@ -136,7 +136,14 @@ const MarketingPage = () => {
     }
   };
   const token = localStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
+  console.log("Token received:", token);
+  let decodedToken;
+  if (typeof token === "string") {
+    decodedToken = jwtDecode(token);
+  } else {
+    console.error("Token không hợp lệ:", token);
+  }
+
   const instructorId = decodedToken.id;
   const fetchWorkshops = async () => {
     try {

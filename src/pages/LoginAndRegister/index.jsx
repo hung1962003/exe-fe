@@ -24,7 +24,7 @@ const LoginAndRegister = () => {
         const user = response.data;
         dispatch(login(user));
         localStorage.setItem("token", user.token);
-        const decoded = jwtDecode(user.token);
+        const decoded = jwtDecode("token");
         const userRole = decoded.role;
         console.log(decoded);
         localStorage.setItem("role", decoded.role);
