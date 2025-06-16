@@ -37,6 +37,7 @@ const DashboardTemplate = ({
     
       setData(response.data.items);
     } catch (error) {
+      console.log(error);
       toast.error("Error while fetching data");
     }
     setLoading(false);
