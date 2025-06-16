@@ -20,7 +20,7 @@ import HistoryTransaction from "./pages/HistoryTransaction";
 import PaymentQR from "./pages/PaymentQR";
 import BankAccountRegister from "./pages/BankAccount";
 import ChangePassword from "./pages/changepassword";
-import LayoutProfile from "./components/layoutprofile";
+import LayoutProfile from "./components/layoutProfile";
 import Profile from "./pages/Profile/index";
 import HistoryTicket from "./pages/History-Ticket";
 import ForgetPassword from "./pages/ForgetPassword";
@@ -28,7 +28,6 @@ import ResetPassword from "./pages/ResetPassword";
 import MarketingPage from "./pages/Marketing";
 import WorkshopDetailsPage from "./pages/WorkshopDetailsPage";
 import WorkshopDetails from "./pages/WorkshopDetails";
-
 
 function App() {
   const router = createBrowserRouter([
