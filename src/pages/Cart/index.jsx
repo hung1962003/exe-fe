@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   Button,
@@ -16,6 +16,8 @@ import {
   DeleteOutlined,
   ShoppingCartOutlined,
   ExclamationCircleOutlined,
+  MinusOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import api from "../../config/api";
 import "./index.scss";
@@ -34,24 +36,6 @@ const { Title, Text } = Typography;
 const { confirm } = Modal;
 const { Option } = Select;
 
-// Custom debounce hook
-const useDebounce = (callback, delay) => {
-  const timeoutRef = useRef(null);
-
-  return useCallback(
-    (...args) => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        callback(...args);
-      }, delay);
-    },
-    [callback, delay]
-  );
-};
-
 const Cart = () => {
   const [dataCart, setDataCart] = useState({ cartItems: [] });
   const [listDiscount, setListDiscount] = useState([]);
@@ -60,7 +44,6 @@ const Cart = () => {
   const [selectedDiscountPercentage, setSelectedDiscountPercentage] =
     useState(0);
   const [isUpdating, setIsUpdating] = useState(false);
-  const pendingUpdatesRef = useRef(new Map());
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -91,84 +74,6 @@ const Cart = () => {
     fetchingDataCart();
   }, [count]);
 
-  // const updateQuantity = async (id, productId, quantity) => {
-  //   try {
-  //     await api.post(`cart/items`, { quantity, productId: productId });
-  //     showSuccessToast("Cập nhật số lượng thành công");
-  //     setTimeout(fetchingDataCart, 500); // Chỉ fetch lại data, không setDataCart trực tiếp
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error("Lỗi khi cập nhật số lượng!");
-  //   }
-  // };
-
-  // Debounced function to handle multiple rapid updates
-  const processUpdates = async () => {
-    const updates = pendingUpdatesRef.current;
-    if (updates.size === 0) return;
-
-    setIsUpdating(true);
-    const updatesArray = Array.from(updates.entries());
-
-    try {
-      // Batch update all pending changes
-      await Promise.all(
-        updatesArray.map(([, { productId, newQuantity, oldQuantity }]) =>
-          api.post(`cart/items`, {
-            quantity: newQuantity - oldQuantity,
-            productId,
-          })
-        )
-      );
-
-      showSuccessToast("Cập nhật số lượng thành công");
-      pendingUpdatesRef.current = new Map();
-    } catch {
-      // Rollback all changes on error
-      setDataCart((prev) => ({
-        ...prev,
-        cartItems: prev.cartItems.map((item) => {
-          const update = updates.get(item.cartItemId);
-          return update ? { ...item, quantity: update.oldQuantity } : item;
-        }),
-      }));
-      toast.error("Lỗi khi cập nhật số lượng!");
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const debouncedProcessUpdates = useDebounce(processUpdates, 2000);
-
-  const updateQuantity = (cartItemId, productId, newQuantity) => {
-    if (isUpdating) return;
-
-    const oldItem = dataCart.cartItems.find(
-      (item) => item.cartItemId === cartItemId
-    );
-    if (!oldItem || oldItem.quantity === newQuantity) return;
-
-    // Update UI immediately
-    setDataCart((prev) => ({
-      ...prev,
-      cartItems: prev.cartItems.map((item) =>
-        item.cartItemId === cartItemId
-          ? { ...item, quantity: newQuantity }
-          : item
-      ),
-    }));
-
-    // Add to pending updates
-    pendingUpdatesRef.current.set(cartItemId, {
-      productId,
-      newQuantity,
-      oldQuantity: oldItem.quantity,
-    });
-
-    // Trigger debounced update
-    debouncedProcessUpdates();
-  };
-
   const totalAmount = (dataCart.cartItems ?? []).reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
@@ -183,7 +88,6 @@ const Cart = () => {
       showSuccessToast(response.data.message);
       dispatch(resetCart());
       setDataCart({ cartItems: [] });
-     
     } catch {
       toast.error("Lỗi khi thanh toán");
     }
@@ -213,6 +117,53 @@ const Cart = () => {
       width: 500,
       onOk: handleOrder,
     });
+  };
+
+  const updateQuantity = async (cartItemId, productId, newQuantity) => {
+    if (isUpdating) return;
+
+    const oldItem = dataCart.cartItems.find(
+      (item) => item.cartItemId === cartItemId
+    );
+    if (!oldItem || oldItem.quantity === newQuantity) return;
+
+    // Update UI immediately
+    setDataCart((prev) => ({
+      ...prev,
+      cartItems: prev.cartItems.map((item) =>
+        item.cartItemId === cartItemId
+          ? { ...item, quantity: newQuantity }
+          : item
+      ),
+    }));
+
+    setIsUpdating(true);
+    try {
+      if (newQuantity > oldItem.quantity) {
+        // Increment quantity
+        await api.post(`cart/items`, {
+          quantity: 1,
+          productId,
+        });
+      } else {
+        // Decrement quantity
+        await api.delete(`cart/items/quantity/${cartItemId}`);
+      }
+      showSuccessToast("Cập nhật số lượng thành công");
+    } catch {
+      // Rollback on error
+      setDataCart((prev) => ({
+        ...prev,
+        cartItems: prev.cartItems.map((item) =>
+          item.cartItemId === cartItemId
+            ? { ...item, quantity: oldItem.quantity }
+            : item
+        ),
+      }));
+      toast.error("Lỗi khi cập nhật số lượng!");
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const columns = [
@@ -264,16 +215,31 @@ const Cart = () => {
       dataIndex: "quantity",
       key: "quantity",
       render: (quantity, record) => (
-        <InputNumber
-          min={1}
-          value={quantity}
-          disabled={isUpdating}
-          onChange={(value) => {
-            if (value !== record.quantity) {
-              updateQuantity(record.cartItemId, record.productId, value);
-            }
-          }}
-        />
+        <div className="quantity-control">
+          <Button
+            icon={<MinusOutlined />}
+            onClick={() => {
+              if (quantity > 1) {
+                updateQuantity(
+                  record.cartItemId,
+                  record.productId,
+                  quantity - 1
+                );
+              } else {
+                handleConfirmDelelete(record.cartItemId);
+              }
+            }}
+            disabled={isUpdating}
+          />
+          <span className="quantity-display">{quantity}</span>
+          <Button
+            icon={<PlusOutlined />}
+            onClick={() => {
+              updateQuantity(record.cartItemId, record.productId, quantity + 1);
+            }}
+            disabled={isUpdating}
+          />
+        </div>
       ),
     },
     {
@@ -337,18 +303,6 @@ const Cart = () => {
           <Card bordered={false} className="cart-card">
             <Title level={3} className="cart-title">
               <ShoppingCartOutlined /> Giỏ hàng của bạn
-            </Title>
-            <Table
-              dataSource={dataCart.cartItems}
-              columns={columns}
-              rowKey="id"
-              pagination={false}
-              loading={isUpdating}
-            />
-          </Card>
-          <Card bordered={false} className="cart-card" style={{ marginTop: 20 }}>
-            <Title level={3} className="cart-title">
-              <ShoppingCartOutlined /> Workshop của bạn
             </Title>
             <Table
               dataSource={dataCart.cartItems}
