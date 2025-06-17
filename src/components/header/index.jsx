@@ -40,6 +40,25 @@ const Header = () => {
     navigate("/my-account/profile");
   };
 
+  const handleNavigateProductsPage = () => {
+    navigate("/product");
+  };
+
+  const handleNavigateServicesPage = () => {
+    navigate("/services");
+  };
+
+  const handleNavigatePagesPage = () => {
+    navigate("/pages");
+  };
+
+  const handleNavigateBlogPage = () => {
+    navigate("/blog");
+  };
+
+  const handleNavigateContactUsPage = () => {
+    navigate("/contact-us");
+  };
   return (
     <>
       <div className="header">
@@ -51,7 +70,14 @@ const Header = () => {
           />
         </div>
         <div className="header__center">
-          
+          <ul className="header__menu">
+            <li onClick={handleNavigateHomePage}>Home</li>
+            <li onClick={handleNavigateProductsPage}>Product</li>
+            <li onClick={handleNavigateServicesPage}>Services</li>
+            <li onClick={handleNavigatePagesPage}>Pages</li>
+            <li onClick={handleNavigateBlogPage}>Social</li>
+            <li onClick={handleNavigateContactUsPage}>Contact Us</li>
+          </ul>
         </div>
         <div className="header__right">
           {isLoggedIn ? (
