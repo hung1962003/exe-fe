@@ -29,6 +29,8 @@ import MarketingPage from "./pages/Marketing";
 import WorkshopDetailsPage from "./pages/WorkshopDetailsPage";
 import WorkshopDetails from "./pages/WorkshopDetails";
 import LayoutProfile from "./components/Layout-Profile"
+import OrderSuccess from "./pages/order-success";
+import OrderFailed from "./pages/order-failed";
 
 
 function App() {
@@ -108,6 +110,14 @@ function App() {
         {
           path: "marketing",
           element: <MarketingPage />,
+        },
+        {
+          path: "order-success",
+          element: <OrderSuccess />,
+        },
+        {
+          path: "order-failed",
+          element: <OrderFailed />,
         },
         {
           path: "/my-account",

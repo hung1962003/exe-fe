@@ -40,6 +40,7 @@ const Profile = () => {
   const fetchAccountData = async () => {
     try {
       const response = await api.get("users/me");
+      console.log(response.data);
       setData(response.data);
     } catch (error) {
       console.error(error);
@@ -61,16 +62,16 @@ const Profile = () => {
         lastName: data.lastName,
         phone: data.phone,
         // birthday: data.birthday ? dayjs(data.birthday) : null,
-        avatar: data.avatar, // server có thể trả về link ảnh cũ (nếu có)
+        avatar: data.avatarUrl, // Đúng trường trả về từ API
       });
       // Nếu server trả về link ảnh => set vào state để hiển thị
-      if (data.avatar) {
-        setAvatarUrl(data.avatar);
+      if (data.avatarUrl) {
+        setAvatarUrl(data.avatarUrl);
         setFileList([
           {
             uid: "-1",
             name: "avatar",
-            url: data.avatar,
+            url: data.avatarUrl,
           },
         ]);
       } else {
@@ -179,28 +180,40 @@ const Profile = () => {
         className="image-upload"
         style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}
       >
-        <Upload
-          className="custom-upload"
-          customRequest={({ file }) => handleFileUpload({ file })}
-          listType="picture-circle"
-          fileList={fileList}
-          onPreview={handlePreview}
-          onChange={handleChange}
-          maxCount={1}
-          previewFile={(file) => {
-            if (file.url?.startsWith("data:image/svg")) {
-              return Promise.reject(new Error("Không preview được ảnh SVG"));
-            }
-            return Promise.resolve(file.url || file.thumbUrl);
-          }}
-        >
-          {fileList.length >= 1 ? null : (
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt="avatar"
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: "50%",
+              objectFit: "cover",
+              border: "2px solid #fdf6ee",
+            }}
+          />
+        ) : (
+          <Upload
+            className="custom-upload"
+            customRequest={({ file }) => handleFileUpload({ file })}
+            listType="picture-circle"
+            fileList={fileList}
+            onPreview={handlePreview}
+            onChange={handleChange}
+            maxCount={1}
+            previewFile={(file) => {
+              if (file.url?.startsWith("data:image/svg")) {
+                return Promise.reject(new Error("Không preview được ảnh SVG"));
+              }
+              return Promise.resolve(file.url || file.thumbUrl);
+            }}
+          >
             <button style={{ border: 0, background: "none" }} type="button">
               <PlusOutlined />
               <div style={{ marginTop: 8 }}>Upload</div>
             </button>
-          )}
-        </Upload>
+          </Upload>
+        )}
         {/* Preview khi click vào ảnh */}
         {previewImage && !previewImage.startsWith("data:image/svg") && (
           <Image

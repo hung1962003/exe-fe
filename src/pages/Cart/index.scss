@@ -173,7 +173,12 @@
     }
   }
 }
-
+.product-name{
+  cursor: pointer;
+  &:hover {
+    color: #b08a5a;
+  }
+}
 .checkout-btn {
   width: 100%;
   background: #b08a5a;

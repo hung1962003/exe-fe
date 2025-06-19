@@ -118,7 +118,9 @@ const Cart = () => {
       onOk: handleOrder,
     });
   };
-
+  const navigateToProduct = (id) => {
+    navigate(`/product/${id}`);
+  };
   const updateQuantity = async (cartItemId, productId, newQuantity) => {
     if (isUpdating) return;
 
@@ -175,8 +177,13 @@ const Cart = () => {
       ),
       dataIndex: "productName",
       key: "productName",
-      render: (productName) => (
-        <Text className="product-name">{productName}</Text>
+      render: (productName, record) => (
+        <Text
+          className="product-name"
+          onClick={() => navigateToProduct(record.productId)}
+        >
+          {productName}
+        </Text>
       ),
     },
     // {
@@ -307,7 +314,7 @@ const Cart = () => {
             <Table
               dataSource={dataCart.cartItems}
               columns={columns}
-              rowKey="id"
+              rowKey="cartItemId"
               pagination={false}
               loading={isUpdating}
             />

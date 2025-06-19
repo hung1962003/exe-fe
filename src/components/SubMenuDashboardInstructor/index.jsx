@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./index.scss";
-import { Select } from "antd";
+import { Select, Pagination } from "antd";
 import OverviewDashboard from "../OverviewDashboard";
 import api from "../../config/api";
 import { jwtDecode } from "jwt-decode";
@@ -66,7 +66,8 @@ const tabs = ["Overview", "Workshops", "Người tham gia", "Phân tích"];
 function SubMenuDashboardInstructor() {
   const [activeTab, setActiveTab] = useState(0);
   const [workshops, setWorkshops] = useState([]);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(6);
   const dataWorkshop = async () => {
     const token = localStorage.getItem("token");
     let decode;
@@ -86,6 +87,18 @@ function SubMenuDashboardInstructor() {
   useEffect(() => {
     dataWorkshop();
   }, []);
+
+  const handlePageChange = (page, size) => {
+    setCurrentPage(page);
+    setPageSize(size);
+  };
+
+  const getCurrentPageData = () => {
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+    return workshops.slice(start, end);
+  };
+
   return (
     <div className="submenu-instructor-wrapper">
       <div className="submenu-tabs">
@@ -108,38 +121,53 @@ function SubMenuDashboardInstructor() {
         {activeTab === 1 && (
           <div className="workshop-list">
             {Array.isArray(workshops) &&
-              workshops.map((ws, idx) => (
-                <div className="workshop-card" key={idx}>
-                  <img
-                    className="workshop-img"
-                    src={ws.description}
-                    alt={ws.title}
-                  />
-                  <div className="workshop-info">
-                    <div className="workshop-title">{ws.workshopTitle}</div>
-                    <div className="workshop-author">Bởi {ws.createBy}</div>
-                    <div className="workshop-desc">{ws.description}</div>
-                    {/* <div className="workshop-tags">
+              workshops
+                .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+                .map((ws, idx) => (
+                  <div className="workshop-card" key={ws.id || idx}>
+                    <img
+                      className="workshop-img"
+                      src={ws.description}
+                      alt={ws.title}
+                    />
+                    <div className="workshop-info">
+                      <div className="workshop-title">{ws.workshopTitle}</div>
+                      <div className="workshop-author">Bởi {ws.createBy}</div>
+                      <div className="workshop-desc">{ws.description}</div>
+                      {/* <div className="workshop-tags">
                       {ws.tags.map((tag, i) => (
                         <span className="workshop-tag" key={i}>
                           {tag}
                         </span>
                       ))}
                     </div> */}
-                    <div className="workshop-owner">
-                      <span className="owner-dot"></span>
-                      <span className="owner-name">{ws.author}</span>
+                      <div className="workshop-owner">
+                        <span className="owner-dot"></span>
+                        <span className="owner-name">{ws.author}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+            <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={workshops.length}
+                onChange={(page, size) => {
+                  setCurrentPage(page);
+                  setPageSize(size);
+                }}
+                showSizeChanger
+                showTotal={(total) => `Tổng số ${total} workshop`}
+              />
+            </div>
           </div>
         )}
         {activeTab === 2 && (
           <div className="participants-table-wrapper">
             <div className="participants-table-title">
               {/* Dropdown chọn discount */}
-              {/* <Select
+              <Select
                 style={{ width: "100%", marginTop: 10 }}
                 placeholder="Chọn mã giảm giá"
                 onChange={(value, option) => {
@@ -148,16 +176,16 @@ function SubMenuDashboardInstructor() {
                 }}
               >
                 <Option value={null}>KHÔNG ÁP DỤNG MÃ</Option>
-                {listDiscount.map((discount) => (
-                  <Option
+                {/* {listDiscount.map((discount) => (
+                  <Option 
                     key={discount.id}
                     value={discount.id}
                     data_percentage={discount.percentage}
                   >
                     {`${discount.code} - Giảm ${discount.percentage}%`}
                   </Option>
-                ))}
-              </Select> */}
+                ))} */}
+              </Select>
             </div>
             <table className="participants-table">
               <thead>

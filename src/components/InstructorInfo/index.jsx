@@ -5,6 +5,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { uploadImageToCloudinary } from "../../utils/upload";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router";
+import api from "../../config/api";
 
 const InstructorInfo = () => {
   const [fileList, setFileList] = useState([]);
@@ -12,7 +13,7 @@ const InstructorInfo = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [instructor, setInstructor] = useState({});
   const navigate = useNavigate();
-
+  const [data, setData] = useState({});
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (typeof token === "string" && token) {
@@ -43,6 +44,21 @@ const InstructorInfo = () => {
     setPreviewImage(file.url || file.preview);
     setPreviewOpen(true);
   };
+  // Lấy dữ liệu tài khoản từ API
+  const fetchAccountData = async () => {
+    try {
+      const response = await api.get("users/me");
+      console.log(response.data);
+      setData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Gọi fetchAccountData khi component mount
+  useEffect(() => {
+    fetchAccountData();
+  }, []);
 
   // Xử lý upload ảnh lên Cloudinary
   const handleFileUpload = async ({ file }) => {
@@ -61,36 +77,57 @@ const InstructorInfo = () => {
   return (
     <div className="dashboard-header">
       <div className="dashboard-header__left">
-        <Upload
-          className="custom-upload"
-          customRequest={handleFileUpload}
-          listType="picture-circle"
-          fileList={fileList}
-          onPreview={handlePreview}
-          onChange={handleChange}
-          maxCount={1}
+        <div
+          className="image-upload"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: 20,
+          }}
         >
-          {fileList.length >= 1 ? null : (
-            <button style={{ border: 0, background: "none" }} type="button">
-              <PlusOutlined />
-              <div style={{ marginTop: 8 }}>Upload</div>
-            </button>
+          {data.avatarUrl ? (
+            <img
+              src={data.avatarUrl}
+              alt="avatar"
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: "50%",
+                objectFit: "cover",
+                border: "2px solid #fdf6ee",
+              }}
+            />
+          ) : (
+            <Upload
+              className="custom-upload"
+              customRequest={handleFileUpload}
+              listType="picture-circle"
+              fileList={fileList}
+              onPreview={handlePreview}
+              onChange={handleChange}
+              maxCount={1}
+            >
+              <button style={{ border: 0, background: "none" }} type="button">
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload</div>
+              </button>
+            </Upload>
           )}
-        </Upload>
-        {/* Preview khi click vào ảnh */}
-        {previewImage && (
-          <Image
-            style={{ width: "200% ", height: "200%" }}
-            className="custom-image"
-            wrapperStyle={{ display: "none" }}
-            preview={{
-              visible: previewOpen,
-              onVisibleChange: (visible) => setPreviewOpen(visible),
-              afterOpenChange: (visible) => !visible && setPreviewImage(""),
-            }}
-            src={previewImage}
-          />
-        )}
+          {/* Preview khi click vào ảnh */}
+          {previewImage && (
+            <Image
+              style={{ width: "200% ", height: "200%" }}
+              className="custom-image"
+              wrapperStyle={{ display: "none" }}
+              preview={{
+                visible: previewOpen,
+                onVisibleChange: (visible) => setPreviewOpen(visible),
+                afterOpenChange: (visible) => !visible && setPreviewImage(""),
+              }}
+              src={previewImage}
+            />
+          )}
+        </div>
         <div>
           <div className="dashboard-header__name">{instructor.firstName}</div>
           <div className="dashboard-header__role">Instructor</div>

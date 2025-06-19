@@ -23,7 +23,7 @@ export default function VideoCard({ src, link }) {
         loop
         muted={muted}
       />
-      <button onClick={toggleMute} className="mute-button">
+      <button onClick={toggleMute} className="mute-button" style={{bottom: "100px"}}>
       {muted ? <VolumeX size={24} /> : <Volume2 size={24} />}
       </button>
       <div className="main-carousel-content">

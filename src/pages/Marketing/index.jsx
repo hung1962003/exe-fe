@@ -16,6 +16,8 @@ import {
   Statistic,
   Progress,
   Tooltip,
+  DatePicker,
+  Image,
 } from "antd";
 import {
   UploadOutlined,
@@ -34,6 +36,15 @@ import "./index.scss";
 import InstructorInfo from "../../components/InstructorInfo";
 import { jwtDecode } from "jwt-decode";
 import api from "../../config/api";
+import {
+  ImageKitAbortError,
+  ImageKitInvalidRequestError,
+  ImageKitServerError,
+  ImageKitUploadNetworkError,
+  upload,
+} from "@imagekit/react";
+import UploadExample from "../../utils/imagekit-upload";
+import { uploadImageToCloudinary } from "../../utils/upload";
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -60,7 +71,10 @@ const MarketingPage = () => {
   const [loading, setLoading] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [workshops, setWorkshops] = useState([]);
-
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [urlImage, setUrlImage] = useState("");
+  const [categories, setCategories] = useState([]);
   // Temporary mock data for testing
   useEffect(() => {
     // Mock workshops data
@@ -120,8 +134,115 @@ const MarketingPage = () => {
 
   useEffect(() => {
     fetchCampaigns();
+    fetchDataMarketingCategory();
   }, []);
+  const abortController = new AbortController();
+  // Hàm đọc file thành base64 để preview
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
 
+  // Xử lý preview khi click vào ảnh
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+  };
+
+  // Xử lý upload ảnh lên Cloudinary
+  const handleFileUpload = async ({ file }) => {
+    const imageUrl = await uploadImageToCloudinary(file);
+    setUrlImage(imageUrl);
+    if (imageUrl) {
+      message.success("Upload ảnh thành công!");
+      setFileList([{ uid: "-1", name: file.name, url: imageUrl }]);
+      form.setFieldsValue({
+        bannerImage: [{ uid: "-1", name: file.name, url: imageUrl }],
+      });
+    } else {
+      message.error("Upload ảnh thất bại, vui lòng thử lại!");
+    }
+  };
+
+  // Xử lý khi thay đổi fileList (AntD)
+  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+
+  // Hàm upload video (gọi khi submit form)
+  const handleVideoUpload = async () => {
+    if (!videoFile) {
+      alert("Please select a file to upload");
+      return;
+    }
+
+    let authParams;
+    try {
+      authParams = await authenticator();
+    } catch (authError) {
+      console.error("Failed to authenticate for upload:", authError);
+      return;
+    }
+    const { signature, expire, token, publicKey } = authParams;
+
+    // Call the ImageKit SDK upload function with the required parameters and callbacks.
+    try {
+      const uploadResponse = await upload({
+        // Authentication parameters
+        expire,
+        token,
+        signature,
+        publicKey,
+        file: videoFile,
+        fileName: videoFile.name, // Optionally set a custom file name
+        // Progress callback to update upload progress state
+        // onProgress: (event) => {
+        //   setProgress((event.loaded / event.total) * 100);
+        // },
+        // Abort signal to allow cancellation of the upload if needed.
+        abortSignal: abortController.signal,
+      });
+      console.log("Upload response:", uploadResponse);
+    } catch (error) {
+      // Handle specific error types provided by the ImageKit SDK.
+      if (error instanceof ImageKitAbortError) {
+        console.error("Upload aborted:", error.reason);
+      } else if (error instanceof ImageKitInvalidRequestError) {
+        console.error("Invalid request:", error.message);
+      } else if (error instanceof ImageKitUploadNetworkError) {
+        console.error("Network error:", error.message);
+      } else if (error instanceof ImageKitServerError) {
+        console.error("Server error:", error.message);
+      } else {
+        // Handle any other errors that may occur.
+        console.error("Upload error:", error);
+      }
+    }
+  };
+  const authenticator = async () => {
+    try {
+      // Perform the request to the upload authentication endpoint.
+      const response = await api.get("/auth");
+      //   if (!response.ok) {
+      //       // If the server response is not successful, extract the error text for debugging.
+      //       const errorText = await response.text();
+      //       throw new Error(`Request failed with status ${response.status}: ${errorText}`);
+      //   }
+
+      // Parse and destructure the response JSON for upload credentials.
+      //const data = await response.json();
+      const { signature, expire, token, publicKey } = response.data;
+      return { signature, expire, token, publicKey };
+    } catch (error) {
+      // Log the original error for debugging before rethrowing a new error.
+      console.error("Authentication error:", error);
+      throw new Error("Authentication request failed");
+    }
+  };
   const fetchCampaigns = async () => {
     try {
       setLoading(true);
@@ -139,7 +260,7 @@ const MarketingPage = () => {
   let decodedToken;
   if (typeof token === "string" && token) {
     decodedToken = jwtDecode(token);
-    console.log("Thông tin người dùng:", decodedToken);
+    //console.log("Thông tin người dùng:", decodedToken);
   } else {
     console.log("Không tìm thấy token hợp lệ");
     // có thể redirect về trang login tại đây
@@ -162,7 +283,27 @@ const MarketingPage = () => {
       message.error("Failed to fetch workshops");
     }
   };
-
+  const fetchDataMarketingCategory = async () => {
+    try {
+      const response = await api.get("/marketing-campaigns/categories");
+      console.log("Categories response:", response);
+      if (
+        response.data &&
+        response.data.data &&
+        Array.isArray(response.data.data)
+      ) {
+        setCategories(response.data.data);
+        console.log(categories);
+      } else {
+        console.error("Invalid categories data format:", response.data);
+        setCategories([]);
+      }
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      setCategories([]);
+      message.error("Failed to fetch campaign categories");
+    }
+  };
   const handleCampaignTypeChange = (value) => {
     setCampaignType(value);
     form.resetFields([
@@ -215,33 +356,49 @@ const MarketingPage = () => {
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
-      const response = await fetch("/api/marketing/campaigns", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          type: campaignType,
-          ...values,
-          status: "active",
-          createdAt: new Date().toISOString(),
-        }),
-      });
+      console.log(values);
+      const bannerUrl = values.bannerImage?.[0]?.url;
 
-      if (response.ok) {
-        message.success("Campaign created successfully!");
-        form.resetFields();
-        setIsCreateModalVisible(false);
-        setBannerImage(null);
-        setVideoFile(null);
-        setFileList([]);
-        fetchCampaigns();
-      } else {
-        message.error("Failed to create campaign");
+      const campaignPayload = {
+        campaignName: values.title,
+        detail: values.detail,
+        categoryId: values.campaignType,
+        workshopId: values.workshopId,
+        startDate: values.startTime.toISOString(),
+        endDate: values.endTime.toISOString(),
+      };
+
+      await api.post("/marketing-campaigns", campaignPayload);
+
+      if (bannerUrl) {
+        await api.post("media", {
+          videourl: bannerUrl,
+          workshopId: values.workshopId,
+        });
       }
+
+      message.success("Tạo campaign thành công!");
+      form.resetFields();
+      setIsCreateModalVisible(false);
+      setBannerImage(null);
+      setVideoFile(null);
+      setFileList([]);
+      fetchCampaigns();
     } catch (err) {
-      console.log(err);
-      message.error("An error occurred while creating the campaign");
+      console.log("Error creating campaign:", err);
+      if (err.code === "ERR_NETWORK") {
+        message.error(
+          "Network error: Please check your internet connection and try again"
+        );
+      } else if (err.response) {
+        message.error(
+          `Failed to create campaign: ${
+            err.response.data?.message || "Unknown error"
+          }`
+        );
+      } else {
+        message.error("Failed to create campaign. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }
@@ -286,71 +443,62 @@ const MarketingPage = () => {
 
   const renderFormFields = () => {
     switch (campaignType) {
-      case "banner":
+      case 2:
         return (
           <Form.Item
             name="bannerImage"
             label="Upload Banner Image"
             valuePropName="fileList"
-            getValueFromEvent={() =>
-              bannerImage ? [{ url: bannerImage }] : []
-            }
+            getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
             rules={[
               { required: true, message: "Please upload a banner image" },
             ]}
           >
             <Upload
-              accept="image/*"
-              maxCount={1}
-              showUploadList={{ showRemoveIcon: true, showPreviewIcon: true }}
-              beforeUpload={() => false}
-              onChange={handleBannerImageChange}
-              fileList={
-                bannerImage
-                  ? [{ uid: "-1", name: "banner", url: bannerImage }]
-                  : []
-              }
+              className="custom-upload"
+              customRequest={handleFileUpload}
               listType="picture-card"
+              fileList={fileList}
+              onPreview={handlePreview}
+              onChange={handleChange}
+              maxCount={1}
             >
-              {!bannerImage && (
-                <div>
-                  <UploadOutlined />
+              {fileList.length >= 1 ? null : (
+                <button style={{ border: 0, background: "none" }} type="button">
+                  <PlusOutlined />
                   <div style={{ marginTop: 8 }}>Upload</div>
-                </div>
+                </button>
               )}
             </Upload>
+            {/* Preview khi click vào ảnh */}
+            {previewImage && (
+              <Image
+                style={{ width: "200% ", height: "200%" }}
+                className="custom-image"
+                wrapperStyle={{ display: "none" }}
+                preview={{
+                  visible: previewOpen,
+                  onVisibleChange: (visible) => setPreviewOpen(visible),
+                  afterOpenChange: (visible) => !visible && setPreviewImage(""),
+                }}
+                src={previewImage}
+              />
+            )}
           </Form.Item>
         );
-      case "video":
+      case 1:
         return (
           <Form.Item
             name="videoFile"
             label="Upload Video File"
             valuePropName="fileList"
-            getValueFromEvent={() => (videoFile ? [{ url: videoFile }] : [])}
+            getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
             rules={[{ required: true, message: "Please upload a video file" }]}
           >
-            <Upload
-              accept="video/*"
-              maxCount={1}
-              showUploadList={{ showRemoveIcon: true, showPreviewIcon: true }}
-              beforeUpload={() => false}
-              onChange={handleVideoFileChange}
-              fileList={
-                videoFile ? [{ uid: "-1", name: "video", url: videoFile }] : []
-              }
-              listType="picture-card"
-            >
-              {!videoFile && (
-                <div>
-                  <UploadOutlined />
-                  <div style={{ marginTop: 8 }}>Upload</div>
-                </div>
-              )}
-            </Upload>
+            <UploadExample onFileChange={(file) => setVideoFile(file)} />
           </Form.Item>
         );
-      case "carousel":
+      case 3:
         return null;
       default:
         return null;
@@ -360,11 +508,11 @@ const MarketingPage = () => {
   const renderCampaignCard = (campaign) => {
     const getTypeIcon = (type) => {
       switch (type) {
-        case "banner":
+        case "BANNER":
           return "📌";
-        case "video":
+        case "VIDEO":
           return "🎥";
-        case "carousel":
+        case "CAROUSEL":
           return "🖼️";
         default:
           return "";
@@ -372,11 +520,11 @@ const MarketingPage = () => {
     };
 
     let preview = <div className="card-preview empty">No Preview</div>;
-    if (campaign.type === "banner" && campaign.bannerImage) {
+    if (campaign.type === "BANNER" && campaign.bannerImage) {
       preview = (
         <img src={campaign.bannerImage} alt="Banner" className="card-preview" />
       );
-    } else if (campaign.type === "video" && campaign.videoFile) {
+    } else if (campaign.type === "VIDEO" && campaign.videoFile) {
       preview = (
         <video
           className="card-preview"
@@ -386,7 +534,7 @@ const MarketingPage = () => {
         />
       );
     } else if (
-      campaign.type === "carousel" &&
+      campaign.type === "CAROUSEL" &&
       campaign.carouselImages &&
       campaign.carouselImages.length
     ) {
@@ -592,10 +740,16 @@ const MarketingPage = () => {
             <Select
               onChange={handleCampaignTypeChange}
               placeholder="Select campaign type"
+              loading={!Array.isArray(categories)}
             >
-              <Option value="banner">📌 Banner</Option>
-              <Option value="video">🎥 Video</Option>
-              <Option value="carousel">🖼️ Carousel</Option>
+              {Array.isArray(categories) &&
+                categories
+                  .filter((category) => category.categoryId != null && category.categoryName)
+                  .map((category) => (
+                    <Option key={category.categoryId} value={category.categoryId}>
+                      {category.categoryName}
+                    </Option>
+                  ))}
             </Select>
           </Form.Item>
 
@@ -608,7 +762,7 @@ const MarketingPage = () => {
           </Form.Item>
 
           <Form.Item
-            name="description"
+            name="detail"
             label="Description"
             rules={[
               {
@@ -618,6 +772,57 @@ const MarketingPage = () => {
             ]}
           >
             <Input.TextArea rows={4} placeholder="Enter campaign description" />
+          </Form.Item>
+
+          <Form.Item
+            name="startTime"
+            label="Start Time"
+            rules={[
+              { required: true, message: "Please select start time" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value) return Promise.resolve();
+                  if (value.isBefore(new Date(), "minute")) {
+                    return Promise.reject("Start time cannot be in the past");
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          >
+            <DatePicker
+              showTime
+              style={{ width: "100%" }}
+              placeholder="Select start time"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="endTime"
+            label="End Time"
+            dependencies={["startTime"]}
+            rules={[
+              { required: true, message: "Please select end time" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  const start = getFieldValue("startTime");
+                  if (!value || !start) return Promise.resolve();
+                  if (value.isSameOrBefore(start)) {
+                    return Promise.reject("End time must be after start time");
+                  }
+                  if (value.isBefore(new Date(), "minute")) {
+                    return Promise.reject("End time cannot be in the past");
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          >
+            <DatePicker
+              showTime
+              style={{ width: "100%" }}
+              placeholder="Select end time"
+            />
           </Form.Item>
 
           {renderFormFields()}

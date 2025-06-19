@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Row, Col, Carousel, Flex, Breadcrumb } from "antd";
+import {
+  Card,
+  Button,
+  Row,
+  Col,
+  Carousel,
+  Flex,
+  Breadcrumb,
+  notification,
+} from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams, useNavigate } from "react-router-dom";
 import api from "../../config/api";
 import { toast } from "react-toastify";
 import "./index.scss";
@@ -16,20 +25,56 @@ import CarouselProductWithThumb from "../../components/carousel-product";
 import CarouselProductWithLightbox from "../../components/carousel-product";
 import { formatMoneyToVND } from "../../currency/currency";
 import CardProduct from "../../components/product";
+import { showSuccessToast } from "../../config/configToast";
+import { useDispatch, useSelector } from "react-redux";
+import { addProductToCart } from "../../redux/features/cartSlice";
 
 const ProductDetail = () => {
   const { id } = useParams(); // Extract the order ID from the URL
+  const navigate = useNavigate();
 
   const [product, setProduct] = useState();
   const [quantity, setQuantity] = useState(1);
-
+  const user = useSelector((store) => store.user);
   const [suggestedProducts, setSuggestedProducts] = useState([]);
-
+  const dispatch = useDispatch();
   const handleQuantityChange = (newValue) => {
     setQuantity(newValue);
     console.log("Số lượng:", newValue);
   };
+  const handleAddToCart = async () => {
+    if (!product) return;
 
+    if (user) {
+      
+      try {
+        const response = await api.post(
+          "cart/items",
+          {
+            quantity: quantity,
+            productId: product.productId,
+          },
+         
+        );
+        showSuccessToast("Thêm sản phẩm vào giỏ hàng thành công!");
+        dispatch(addProductToCart(response.data));
+      } catch (error) {
+        console.log(error);
+        if (error.code === "ECONNABORTED") {
+          toast.error("Kết nối bị timeout. Vui lòng thử lại!");
+        } else {
+          toast.error("Lỗi khi thêm vào giỏ hàng!");
+        }
+      }
+    } else {
+      notification.warning({
+        message: "Không thể thêm sản phẩm này",
+        description: "Bạn cần đăng nhập tài khoản.",
+        duration: 5,
+      });
+      navigate("/login");
+    }
+  };
   const fetchProductDetail = async () => {
     try {
       const response = await api.get(`products/${id}`);
@@ -182,6 +227,7 @@ const ProductDetail = () => {
               icon={<ShoppingCartOutlined />}
               size="large"
               style={{ borderRadius: "8px", backgroundColor: "#8a9c7c" }}
+              onClick={handleAddToCart}
             >
               Thêm vào giỏ hàng
             </Button>

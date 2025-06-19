@@ -74,7 +74,7 @@ const options = {
   plugins: {
     legend: {
       labels: {
-        color: "#fff",
+        color: "black",
         font: { size: 14 },
       },
     },
@@ -87,22 +87,22 @@ const options = {
   },
   scales: {
     x: {
-      ticks: { color: "#fff" },
+      ticks: { color: "black" },
       grid: { color: "#333" },
     },
     y1: {
       type: "linear",
       position: "left",
-      title: { display: true, text: "Doanh thu", color: "#fff" },
-      ticks: { color: "#fff", stepSize: 1 },
+      title: { display: true, text: "Doanh thu", color: "#black" },
+      ticks: { color: "#black", stepSize: 1 },
       grid: { color: "#333" },
       min: 0,
     },
     y2: {
       type: "linear",
       position: "right",
-      title: { display: true, text: "Số vé bán", color: "#fff" },
-      ticks: { color: "#fff", stepSize: 1 },
+      title: { display: true, text: "Số vé bán", color: "black" },
+      ticks: { color: "black", stepSize: 1 },
       grid: { drawOnChartArea: false },
       min: 0,
     },
