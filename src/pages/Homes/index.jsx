@@ -98,7 +98,7 @@ function Home() {
         }),
       ]);
 
-      setIsDataUpcoming(upcomingResponse.data?.content || []);
+      setIsDataUpcoming(upcomingResponse.data?.content );
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
