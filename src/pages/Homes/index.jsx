@@ -98,7 +98,7 @@ function Home() {
         }),
       ]);
 
-      setIsDataUpcoming(upcomingResponse.data.content);
+      setIsDataUpcoming(upcomingResponse.data?.content || []);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -162,7 +162,9 @@ function Home() {
               Dành cho bạn
             </span>
           </div>
-          <CarouselForYou data={isDataUpcoming} />
+          {Array.isArray(isDataUpcoming) && (
+            <CarouselForYou data={isDataUpcoming} />
+          )}
         </div>
         <div className="block">
           <div
@@ -196,7 +198,9 @@ function Home() {
               Xem thêm
             </Button>
           </div>
-          <CarouselForYou data={isDataUpcoming} />
+          {Array.isArray(isDataUpcoming) && (
+            <CarouselForYou data={isDataUpcoming} />
+          )}
         </div>
         <div className="block">
           <div
@@ -230,7 +234,9 @@ function Home() {
               Xem thêm
             </Button>
           </div>
-          <CarouselForYou visibleCount={visibleCount} data={isDataUpcoming} />
+          {Array.isArray(isDataUpcoming) && (
+            <CarouselForYou visibleCount={visibleCount} data={isDataUpcoming} />
+          )}
         </div>
       </div>
     </div>
